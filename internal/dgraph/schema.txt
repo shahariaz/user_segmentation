@@ -1,0 +1,147 @@
+
+# Customers
+chorki_customers.id: string @index(exact) @upsert .
+chorki_customers.name: string @index(term, fulltext) .
+chorki_customers.email: string @index(exact) @upsert .
+chorki_customers.age: int @index(int) .
+chorki_customers.country: string @index(exact, term) .
+chorki_customers.device: string @index(exact) .
+chorki_customers.app_version: string @index(exact) .
+chorki_customers.app_version_numeric: int @index(int) .
+chorki_customers.last_login_days: int @index(int) .
+chorki_customers.created_at: datetime @index(date) .
+chorki_customers.updated_at: datetime .
+
+chorki_customers.subscriptions: [uid] @reverse .
+chorki_customers.watch_histories: [uid] @reverse .
+chorki_customers.devices: [uid] @reverse .
+
+# Subscriptions
+chorki_subscriptions.id: string @index(exact) @upsert .
+chorki_subscriptions.package: string @index(exact, term) .
+chorki_subscriptions.status: string @index(exact) .
+chorki_subscriptions.start_date: datetime @index(date) .
+chorki_subscriptions.end_date: datetime @index(date) .
+chorki_subscriptions.price: float @index(float) .
+chorki_subscriptions.currency: string @index(exact) .
+chorki_subscriptions.created_at: datetime @index(date) .
+chorki_subscriptions.updated_at: datetime .
+
+# Devices
+chorki_devices.id: string @index(exact) @upsert .
+chorki_devices.device_type: string @index(exact, term) .
+chorki_devices.device_model: string @index(term) .
+chorki_devices.app_version: string @index(exact) .
+chorki_devices.app_version_numeric: int @index(int) .
+chorki_devices.os_version: string @index(exact) .
+chorki_devices.os_version_numeric: int @index(int) .
+chorki_devices.is_active: bool @index(bool) .
+chorki_devices.last_seen: datetime @index(date) .
+chorki_devices.created_at: datetime @index(date) .
+chorki_devices.updated_at: datetime .
+
+# Watch histories
+chorki_watch_histories.id: string @index(exact) @upsert .
+chorki_watch_histories.content_id: string @index(exact) .
+chorki_watch_histories.content_title: string @index(term, fulltext) .
+chorki_watch_histories.type: string @index(exact, term) .
+chorki_watch_histories.genre: [string] @index(exact, term) .
+chorki_watch_histories.watch_date: datetime @index(datetime) .
+chorki_watch_histories.watch_duration: int .
+chorki_watch_histories.completion_percentage: float .
+chorki_watch_histories.created_at: datetime @index(datetime) .
+
+chorki_watch_histories.content: uid @reverse .
+
+# Contents
+chorki_contents.id: string @index(exact) @upsert .
+chorki_contents.title: string @index(term, fulltext) .
+chorki_contents.type: string @index(exact, term) .
+chorki_contents.genre: [string] @index(exact, term) .
+chorki_contents.duration: int @index(int) .
+chorki_contents.rating: float @index(float) .
+chorki_contents.release_date: datetime @index(datetime) .
+chorki_contents.language: string @index(exact) .
+chorki_contents.description: string @index(fulltext) .
+chorki_contents.thumbnail_url: string .
+chorki_contents.video_url: string .
+chorki_contents.is_premium: bool @index(bool) .
+chorki_contents.created_at: datetime @index(day) .
+chorki_contents.updated_at: datetime .
+
+####################################
+# Types
+####################################
+
+type chorki_customers {
+  chorki_customers.id
+  chorki_customers.name
+  chorki_customers.email
+  chorki_customers.age
+  chorki_customers.country
+  chorki_customers.device
+  chorki_customers.app_version
+  chorki_customers.app_version_numeric
+  chorki_customers.last_login_days
+  chorki_customers.created_at
+  chorki_customers.updated_at
+  chorki_customers.subscriptions
+  chorki_customers.watch_histories
+  chorki_customers.devices
+}
+
+type chorki_subscriptions {
+  chorki_subscriptions.id
+  chorki_subscriptions.package
+  chorki_subscriptions.status
+  chorki_subscriptions.start_date
+  chorki_subscriptions.end_date
+  chorki_subscriptions.price
+  chorki_subscriptions.currency
+  chorki_subscriptions.created_at
+  chorki_subscriptions.updated_at
+}
+
+type chorki_devices {
+  chorki_devices.id
+  chorki_devices.device_type
+  chorki_devices.device_model
+  chorki_devices.app_version
+  chorki_devices.app_version_numeric
+  chorki_devices.os_version
+  chorki_devices.os_version_numeric
+  chorki_devices.is_active
+  chorki_devices.last_seen
+  chorki_devices.created_at
+  chorki_devices.updated_at
+}
+
+type chorki_watch_histories {
+  chorki_watch_histories.id
+  chorki_watch_histories.content_id
+  chorki_watch_histories.content_title
+  chorki_watch_histories.type
+  chorki_watch_histories.genre
+  chorki_watch_histories.watch_date
+  chorki_watch_histories.watch_duration
+  chorki_watch_histories.completion_percentage
+  chorki_watch_histories.created_at
+  chorki_watch_histories.content
+}
+
+type chorki_contents {
+  chorki_contents.id
+  chorki_contents.title
+  chorki_contents.type
+  chorki_contents.genre
+  chorki_contents.duration
+  chorki_contents.rating
+  chorki_contents.release_date
+  chorki_contents.language
+  chorki_contents.description
+  chorki_contents.thumbnail_url
+  chorki_contents.video_url
+  chorki_contents.is_premium
+  chorki_contents.created_at
+  chorki_contents.updated_at
+}

@@ -4,10 +4,12 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shahariaz/user_segmentation/internal/handler"
 )
 
 func main() {
 	router := gin.Default()
+	queryHandler := handler.QueryHandler{}
 
 	api := router.Group("/api/v1")
 	{
@@ -16,6 +18,8 @@ func main() {
 				"message": "pong",
 			})
 		})
+
+		api.POST("/query", queryHandler.HandleQuery)
 	}
 
 	log.Fatal(router.Run(":8010"))
