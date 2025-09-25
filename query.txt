@@ -1,0 +1,29 @@
+query {
+  var(func: type(chorki_devices)) @filter(eq(chorki_devices.device_type, "Android")) {
+    var0 as ~chorki_customers.devices
+  }
+  var(func: type(chorki_subscriptions)) @filter(eq(chorki_subscriptions.package, "Premium")) {
+    var1 as ~chorki_customers.subscriptions
+  }
+  var(func: type(chorki_subscriptions)) @filter(eq(chorki_subscriptions.status, "active")) {
+    var2 as ~chorki_customers.subscriptions
+  }
+  var(func: type(chorki_contents)) @filter(eq(chorki_contents.title, "one piece")) {
+    ~chorki_watch_histories.content_id {
+      var3 as ~chorki_customers.watch_histories
+    }
+  }
+  var(func: type(chorki_watch_histories)) @filter(gt(chorki_watch_histories.watch_duration, 30)) {
+    var4 as ~chorki_customers.watch_histories
+  }
+  chorki_customerss(func: type(chorki_customers)) @filter((between(chorki_customers.age, 18, 30) AND eq(chorki_customers.country, "USA") AND uid(var0)) AND (uid(var1) AND uid(var2)) AND (uid(var3) AND uid(var4))) (first: 100, offset: 0) {
+    uid
+    chorki_customers.id
+    chorki_customers.name
+    chorki_customers.email
+    chorki_customers.age
+    chorki_customers.country
+    chorki_customers.device
+    chorki_customers.app_version
+  }
+}
