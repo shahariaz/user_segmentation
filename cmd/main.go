@@ -9,7 +9,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	queryHandler := handler.QueryHandler{}
+	queryHandler := handler.NewQueryHandler()
 
 	api := router.Group("/api/v1")
 	{
@@ -20,6 +20,7 @@ func main() {
 		})
 
 		api.POST("/query", queryHandler.HandleQuery)
+		api.POST("/execute", queryHandler.ExecuteQuery)
 	}
 
 	log.Fatal(router.Run(":8010"))
