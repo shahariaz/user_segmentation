@@ -2,10 +2,18 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/shahariaz/user_segmentation/internal/converter"
 	models "github.com/shahariaz/user_segmentation/internal/model"
 )
 
 type QueryHandler struct {
+	converter *converter.Converter
+}
+
+func NewQueryHandler() *QueryHandler {
+	return &QueryHandler{
+		converter: converter.NewConverter(),
+	}
 }
 
 func (h *QueryHandler) HandleQuery(c *gin.Context) {
