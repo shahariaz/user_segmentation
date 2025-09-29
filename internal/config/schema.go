@@ -28,8 +28,8 @@ func getFieldMappings() map[string][]models.FieldMapping {
 			{JSONField: "country", DgraphField: "chorki_customers.country", EntityType: "chorki_customers", DataType: "string"},
 		},
 		"device": {
-			{JSONField: "device", DgraphField: "chorki_customers.device", EntityType: "chorki_customers", DataType: "string"},
 			{JSONField: "device", DgraphField: "chorki_devices.device_type", EntityType: "chorki_devices", DataType: "string"},
+			{JSONField: "device", DgraphField: "chorki_customers.device", EntityType: "chorki_customers", DataType: "string"},
 		},
 		"app_version": {
 			{JSONField: "app_version", DgraphField: "chorki_customers.app_version", EntityType: "chorki_customers", DataType: "string"},
@@ -144,8 +144,12 @@ func getDefaultFields() map[string][]string {
 			"chorki_customers.email",
 			"chorki_customers.age",
 			"chorki_customers.country",
+			"chorki_customers.city",
 			"chorki_customers.device",
 			"chorki_customers.app_version",
+			"chorki_customers.last_login_days",
+			"chorki_customers.is_active",
+			"chorki_customers.created_at",
 		},
 		"chorki_subscriptions": {
 			"uid",
@@ -219,9 +223,10 @@ func GetVersionFields() map[string]string {
 // GetReversePredicates returns the reverse predicate mappings
 func GetReversePredicates() map[string]string {
 	return map[string]string{
-		"customers":                      "~chorki_customers.subscriptions",
-		"customers_from_devices":         "~chorki_customers.devices",
-		"customers_from_watch_histories": "~chorki_customers.watch_histories",
+		"chorki_subscriptions": "~chorki_customers.subscriptions",
+		"chorki_devices":       "~chorki_customers.devices", 
+		"chorki_watch_histories": "~chorki_customers.watch_histories",
+		"chorki_contents":      "~chorki_watch_histories.content",
 	}
 }
 

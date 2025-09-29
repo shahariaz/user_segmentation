@@ -1,9 +1,11 @@
-package models
+apackage models
 
 // JSONQuery represents the root structure of the incoming JSON query
 type JSONQuery struct {
 	CombineWith string  `json:"combine_with" binding:"required"` // "AND" or "OR"
 	Groups      []Group `json:"groups" binding:"required"`
+	Limit       int     `json:"limit,omitempty"`  // Pagination limit
+	Offset      int     `json:"offset,omitempty"` // Pagination offset
 }
 
 type Group struct {
@@ -20,7 +22,24 @@ type Filter struct {
 }
 
 type DQLQuery struct {
-	Queries []EntityQuery `json:"queries"`
+	Variables []VariableBlock `json:"variables,omitempty"` // Variable blocks for cross-entity filters
+	MainQuery MainQuery       `json:"main_query"`          // Main query block
+}
+
+type VariableBlock struct {
+	Name     string `json:"name"`     // var0, var1, etc.
+	Type     string `json:"type"`     // Entity type
+	Filter   string `json:"filter"`   // Filter condition
+	Fields   string `json:"fields"`   // Fields to traverse (usually reverse predicates)
+}
+
+type MainQuery struct {
+	Name       string `json:"name"`       // Query name (e.g., "chorki_customers")
+	Type       string `json:"type"`       // Entity type
+	Function   string `json:"function"`   // func: type(entity)
+	Filter     string `json:"filter"`     // Main filter with uid references
+	Fields     string `json:"fields"`     // Fields to select
+	Pagination string `json:"pagination"` // Pagination clause
 }
 
 type EntityQuery struct {

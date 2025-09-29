@@ -28,75 +28,208 @@ func NewConverter() *Converter {
 }
 
 func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery, error) {
-	involvedEntities := c.getInvolvedEntityTypes(jsonQuery)
-
-	//we have to check top level later
-
-	var queries []models.EntityQuery
-	for _, entityType := range involvedEntities {
-		filter, err := c.buildFilterForEntity(jsonQuery, entityType)
-		if err != nil {
-			return nil, fmt.Errorf("error building filter for %s: %v", entityType, err)
-		}
-
-		// Only include entities that have applicable filters
-		if filter != "" {
-			query := models.EntityQuery{
-				Name:     c.getQueryName(entityType),
-				Type:     entityType,
-				Function: fmt.Sprintf("type(%s)", entityType),
-				Filter:   filter,
-				Fields:   c.buildFieldsSelection(entityType),
+	// Main entity is always chorki_customers
+	const mainEntityType = "chorki_customers"
+	
+	// Separate filters by entity type
+	mainEntityFilters, crossEntityFilters := c.categorizeFilters(jsonQuery, mainEntityType)
+	
+	// Build variable blocks for cross-entity filters
+	var variables []models.VariableBlock
+	var uidReferences []string
+	varCounter := 0
+	
+	for entityType, filters := range crossEntityFilters {
+		if len(filters) > 0 {
+			varName := fmt.Sprintf("var%d", varCounter)
+			varCounter++
+			
+			// Build filter condition for this entity
+			filterCondition := c.buildGroupFiltersForEntity(filters, entityType)
+			
+			// Get reverse predicate
+			reversePredicates := config.GetReversePredicates()
+			reversePredicate := reversePredicates[entityType]
+			
+			variable := models.VariableBlock{
+				Name:   varName,
+				Type:   entityType,
+				Filter: fmt.Sprintf("@filter(%s)", filterCondition),
+				Fields: fmt.Sprintf("    %s", reversePredicate),
 			}
-			queries = append(queries, query)
+			
+			variables = append(variables, variable)
+			uidReferences = append(uidReferences, fmt.Sprintf("uid(%s)", varName))
 		}
 	}
-
-	return &models.DQLQuery{Queries: queries}, nil
-
+	
+	// Build main query filter
+	var mainFilterParts []string
+	
+	// Add uid references from variables
+	if len(uidReferences) > 0 {
+		mainFilterParts = append(mainFilterParts, strings.Join(uidReferences, " AND "))
+	}
+	
+	// Add main entity filters
+	if len(mainEntityFilters) > 0 {
+		mainCondition := c.buildGroupFiltersForEntity(mainEntityFilters, mainEntityType)
+		mainFilterParts = append(mainFilterParts, mainCondition)
+	}
+	
+	// Combine main filter parts
+	var mainFilter string
+	if len(mainFilterParts) > 0 {
+		// Use the top-level combine_with from JSON query
+		combiner := " AND "
+		if strings.ToUpper(jsonQuery.CombineWith) == "OR" {
+			combiner = " OR "
+		}
+		combinedFilter := strings.Join(mainFilterParts, combiner)
+		mainFilter = fmt.Sprintf("@filter(%s)", combinedFilter)
+	}
+	
+	// Build pagination
+	pagination := ""
+	limit := jsonQuery.Limit
+	offset := jsonQuery.Offset
+	if limit == 0 {
+		limit = 100 // Default limit
+	}
+	pagination = fmt.Sprintf("first: %d, offset: %d", limit, offset)
+	
+	// Build main query
+	mainQuery := models.MainQuery{
+		Name:       "chorki_customers", // Always use chorki_customers as main query name
+		Type:       mainEntityType,
+		Function:   fmt.Sprintf("type(%s)", mainEntityType),
+		Filter:     mainFilter,
+		Fields:     c.buildFieldsSelection(mainEntityType),
+		Pagination: pagination,
+	}
+	
+	return &models.DQLQuery{
+		Variables: variables,
+		MainQuery: mainQuery,
+	}, nil
 }
 
-func (c *Converter) getInvolvedEntityTypes(jsonQuery *models.JSONQuery) []string {
-	entityTypeMap := make(map[string]bool)
-
-	c.collectEntityTypesFromGroups(jsonQuery.Groups, entityTypeMap)
-
-	var result []string
-	for entityType := range entityTypeMap {
-		result = append(result, entityType)
+// categorizeFilters separates filters into main entity and cross-entity categories
+// Main entity is always chorki_customers - all queries are customer-centric
+func (c *Converter) categorizeFilters(jsonQuery *models.JSONQuery, mainEntityType string) ([]models.Group, map[string][]models.Group) {
+	mainEntityFilters := []models.Group{}
+	crossEntityFilters := make(map[string][]models.Group)
+	
+	for _, group := range jsonQuery.Groups {
+		mainGroup, crossGroups := c.categorizeGroup(group, mainEntityType)
+		
+		if mainGroup != nil {
+			mainEntityFilters = append(mainEntityFilters, *mainGroup)
+		}
+		
+		for entityType, groups := range crossGroups {
+			crossEntityFilters[entityType] = append(crossEntityFilters[entityType], groups...)
+		}
 	}
-
-	if len(result) == 0 {
-		result = append(result, "chorki_customers")
-	}
-
-	return result
+	
+	return mainEntityFilters, crossEntityFilters
 }
 
-func (c *Converter) collectEntityTypesFromGroups(groups []models.Group, entityTypeMap map[string]bool) {
-	for _, group := range groups {
-
-		for _, filter := range group.Filters {
-			if mappings, exists := c.schema.FieldMappings[filter.Field]; exists {
-
+func (c *Converter) categorizeGroup(group models.Group, mainEntityType string) (*models.Group, map[string][]models.Group) {
+	mainFilters := []models.Filter{}
+	crossGroups := make(map[string][]models.Group)
+	
+	// Process filters in this group
+	for _, filter := range group.Filters {
+		if mappings, exists := c.schema.FieldMappings[filter.Field]; exists {
+			// For device field, prioritize cross-entity mapping to chorki_devices
+			if filter.Field == "device" {
+				// Find device entity mapping
 				for _, mapping := range mappings {
-					entityTypeMap[mapping.EntityType] = true
+					if mapping.EntityType == "chorki_devices" {
+						entityGroup := models.Group{
+							CombineWith: group.CombineWith,
+							Filters:     []models.Filter{filter},
+						}
+						crossGroups[mapping.EntityType] = append(crossGroups[mapping.EntityType], entityGroup)
+						goto nextFilter // Skip to next filter
+					}
+				}
+			}
+			
+			// Default logic for other fields
+			belongsToMain := false
+			for _, mapping := range mappings {
+				if mapping.EntityType == mainEntityType {
+					belongsToMain = true
+					break
+				}
+			}
+			
+			if belongsToMain {
+				mainFilters = append(mainFilters, filter)
+			} else {
+				// Find which entity this filter belongs to
+				for _, mapping := range mappings {
+					if mapping.EntityType != mainEntityType {
+						entityGroup := models.Group{
+							CombineWith: group.CombineWith,
+							Filters:     []models.Filter{filter},
+						}
+						crossGroups[mapping.EntityType] = append(crossGroups[mapping.EntityType], entityGroup)
+						break // Take first non-main entity mapping
+					}
 				}
 			}
 		}
-
-		if len(group.Groups) > 0 {
-			c.collectEntityTypesFromGroups(group.Groups, entityTypeMap)
+		nextFilter:
+	}
+	
+	// Process nested groups recursively
+	var mainNestedGroups []models.Group
+	for _, nestedGroup := range group.Groups {
+		nestedMain, nestedCross := c.categorizeGroup(nestedGroup, mainEntityType)
+		if nestedMain != nil {
+			mainNestedGroups = append(mainNestedGroups, *nestedMain)
+		}
+		for entityType, groups := range nestedCross {
+			crossGroups[entityType] = append(crossGroups[entityType], groups...)
 		}
 	}
+	
+	// Create main group if there are main filters or nested groups
+	var mainGroup *models.Group
+	if len(mainFilters) > 0 || len(mainNestedGroups) > 0 {
+		mainGroup = &models.Group{
+			CombineWith: group.CombineWith,
+			Filters:     mainFilters,
+			Groups:      mainNestedGroups,
+		}
+	}
+	
+	return mainGroup, crossGroups
 }
 
-func (c *Converter) buildFilterForEntity(jsonQuery *models.JSONQuery, entityType string) (string, error) {
-	filter := c.buildGroupsFilter(jsonQuery.Groups, jsonQuery.CombineWith, entityType)
-	if filter == "" {
-		return "", nil
+func (c *Converter) buildGroupFiltersForEntity(groups []models.Group, entityType string) string {
+	var conditions []string
+	
+	for _, group := range groups {
+		condition := c.buildGroupFilter(group, entityType)
+		if condition != "" {
+			conditions = append(conditions, condition)
+		}
 	}
-	return fmt.Sprintf("@filter(%s)", filter), nil
+	
+	if len(conditions) == 0 {
+		return ""
+	}
+	
+	if len(conditions) == 1 {
+		return conditions[0]
+	}
+	
+	// Use AND to combine different groups
+	return "(" + strings.Join(conditions, " AND ") + ")"
 }
 
 func (c *Converter) getQueryName(entityType string) string {
@@ -120,31 +253,12 @@ func (c *Converter) getQueryName(entityType string) string {
 func (c *Converter) buildFieldsSelection(entityType string) string {
 	fields := c.schema.DefaultFields[entityType]
 	if len(fields) == 0 {
-		return "uid\nexpand(_all_)"
+		return "    uid\n    expand(_all_)"
 	}
 
 	var fieldLines []string
-
 	for _, field := range fields {
 		fieldLines = append(fieldLines, "    "+field)
-	}
-
-	if relationships, exists := c.schema.Relationships[entityType]; exists {
-		for _, relatedEntity := range relationships {
-			relatedFields := c.schema.DefaultFields[relatedEntity]
-			if len(relatedFields) > 0 {
-				// Get the relationship predicate name
-				relationName := c.getRelationshipName(entityType, relatedEntity)
-
-				// Add related entity block with nested fields
-				fieldLines = append(fieldLines, "")
-				fieldLines = append(fieldLines, fmt.Sprintf("    %s {", relationName))
-				for _, relField := range relatedFields {
-					fieldLines = append(fieldLines, "      "+relField)
-				}
-				fieldLines = append(fieldLines, "    }")
-			}
-		}
 	}
 
 	return strings.Join(fieldLines, "\n")
@@ -645,21 +759,28 @@ func (c *Converter) buildComplexObjectCondition(mapping *models.FieldMapping, ob
 }
 
 func (c *Converter) GenerateDQLString(dqlQuery *models.DQLQuery) string {
-	if len(dqlQuery.Queries) == 0 {
-		return "{}"
-	}
-
-	var queryBlocks []string
-
-	for _, query := range dqlQuery.Queries {
-		block := fmt.Sprintf("  %s(func: %s) %s {\n%s\n  }",
-			query.Name,
-			query.Function,
-			query.Filter,
-			query.Fields,
+	var blocks []string
+	
+	// Add variable blocks
+	for _, variable := range dqlQuery.Variables {
+		block := fmt.Sprintf("  %s as var(func: type(%s)) %s {\n%s\n  }",
+			variable.Name,
+			variable.Type,
+			variable.Filter,
+			variable.Fields,
 		)
-		queryBlocks = append(queryBlocks, block)
+		blocks = append(blocks, block)
 	}
-
-	return "{\n" + strings.Join(queryBlocks, "\n\n") + "\n}"
+	
+	// Add main query block
+	mainBlock := fmt.Sprintf("  %s(func: %s, %s) %s {\n%s\n  }",
+		dqlQuery.MainQuery.Name,
+		dqlQuery.MainQuery.Function,
+		dqlQuery.MainQuery.Pagination,
+		dqlQuery.MainQuery.Filter,
+		dqlQuery.MainQuery.Fields,
+	)
+	blocks = append(blocks, mainBlock)
+	
+	return "query {\n" + strings.Join(blocks, "\n") + "\n}"
 }
