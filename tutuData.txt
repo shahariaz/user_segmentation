@@ -1,0 +1,417 @@
+{
+ 
+    "set": [
+      {
+        "uid": "_:customer1",
+        "dgraph.type": "chorki_customers",
+        "chorki_customers.id": "CUST001",
+        "chorki_customers.name": "John Doe",
+        "chorki_customers.email": "john.doe@example.com",
+        "chorki_customers.age": "28",
+        "chorki_customers.country": "USA",
+        "chorki_customers.city": "New York",
+        "chorki_customers.device": "iPhone",
+        "chorki_customers.app_version": "5.2.1",
+        "chorki_customers.last_login_days": "2",
+        "chorki_customers.is_active": "true",
+        "chorki_customers.created_at": "2024-01-15T10:00:00Z",
+        "chorki_customers.subscriptions": [
+          {
+            "uid": "_:sub1"
+          }
+        ],
+        "chorki_customers.devices": [
+          {
+            "uid": "_:device1"
+          }
+        ],
+        "chorki_customers.watch_histories": [
+          {
+            "uid": "_:watch1"
+          },
+          {
+            "uid": "_:watch2"
+          }
+        ]
+      },
+      {
+        "uid": "_:customer2",
+        "dgraph.type": "chorki_customers",
+        "chorki_customers.id": "CUST002",
+        "chorki_customers.name": "Sarah Smith",
+        "chorki_customers.email": "sarah.smith@example.com",
+        "chorki_customers.age": "35",
+        "chorki_customers.country": "Canada",
+        "chorki_customers.city": "Toronto",
+        "chorki_customers.device": "Android",
+        "chorki_customers.app_version": "5.1.0",
+        "chorki_customers.last_login_days": "5",
+        "chorki_customers.is_active": "true",
+        "chorki_customers.created_at": "2024-02-20T14:30:00Z",
+        "chorki_customers.subscriptions": [
+          {
+            "uid": "_:sub2"
+          }
+        ],
+        "chorki_customers.devices": [
+          {
+            "uid": "_:device2"
+          }
+        ],
+        "chorki_customers.watch_histories": [
+          {
+            "uid": "_:watch3"
+          }
+        ]
+      },
+      {
+        "uid": "_:customer3",
+        "dgraph.type": "chorki_customers",
+        "chorki_customers.id": "CUST003",
+        "chorki_customers.name": "Michael Chen",
+        "chorki_customers.email": "michael.chen@example.com",
+        "chorki_customers.age": "22",
+        "chorki_customers.country": "UK",
+        "chorki_customers.city": "London",
+        "chorki_customers.device": "Web",
+        "chorki_customers.app_version": "5.2.1",
+        "chorki_customers.last_login_days": "1",
+        "chorki_customers.is_active": "true",
+        "chorki_customers.created_at": "2024-09-10T08:15:00Z",
+        "chorki_customers.subscriptions": [
+          {
+            "uid": "_:sub3"
+          }
+        ],
+        "chorki_customers.devices": [
+          {
+            "uid": "_:device3"
+          }
+        ],
+        "chorki_customers.watch_histories": [
+          {
+            "uid": "_:watch4"
+          }
+        ]
+      },
+      {
+        "uid": "_:customer4",
+        "dgraph.type": "chorki_customers",
+        "chorki_customers.id": "CUST004",
+        "chorki_customers.name": "Emily Johnson",
+        "chorki_customers.email": "emily.j@example.com",
+        "chorki_customers.age": "45",
+        "chorki_customers.country": "Australia",
+        "chorki_customers.city": "Sydney",
+        "chorki_customers.device": "iPad",
+        "chorki_customers.app_version": "4.8.0",
+        "chorki_customers.last_login_days": "30",
+        "chorki_customers.is_active": "false",
+        "chorki_customers.created_at": "2023-11-05T12:00:00Z",
+        "chorki_customers.subscriptions": [
+          {
+            "uid": "_:sub4"
+          }
+        ],
+        "chorki_customers.devices": [
+          {
+            "uid": "_:device4"
+          }
+        ]
+      },
+      {
+        "uid": "_:customer5",
+        "dgraph.type": "chorki_customers",
+        "chorki_customers.id": "CUST005",
+        "chorki_customers.name": "David Martinez",
+        "chorki_customers.email": "david.m@example.com",
+        "chorki_customers.age": "31",
+        "chorki_customers.country": "USA",
+        "chorki_customers.city": "Los Angeles",
+        "chorki_customers.device": "Samsung",
+        "chorki_customers.app_version": "5.2.0",
+        "chorki_customers.last_login_days": "3",
+        "chorki_customers.is_active": "true",
+        "chorki_customers.created_at": "2024-03-12T16:45:00Z",
+        "chorki_customers.subscriptions": [
+          {
+            "uid": "_:sub5"
+          }
+        ],
+        "chorki_customers.devices": [
+          {
+            "uid": "_:device5"
+          }
+        ],
+        "chorki_customers.watch_histories": [
+          {
+            "uid": "_:watch5"
+          }
+        ]
+      },
+      {
+        "uid": "_:sub1",
+        "dgraph.type": "chorki_subscriptions",
+        "chorki_subscriptions.id": "SUB001",
+        "chorki_subscriptions.package": "Premium",
+        "chorki_subscriptions.status": "active",
+        "chorki_subscriptions.price": "9.99",
+        "chorki_subscriptions.currency": "USD",
+        "chorki_subscriptions.payment_method": "credit_card",
+        "chorki_subscriptions.auto_renewal": "true",
+        "chorki_subscriptions.trial_period": "false",
+        "chorki_subscriptions.start_date": "2024-01-15T10:00:00Z",
+        "chorki_subscriptions.end_date": "2025-01-15T10:00:00Z"
+      },
+      {
+        "uid": "_:sub2",
+        "dgraph.type": "chorki_subscriptions",
+        "chorki_subscriptions.id": "SUB002",
+        "chorki_subscriptions.package": "Basic",
+        "chorki_subscriptions.status": "active",
+        "chorki_subscriptions.price": "4.99",
+        "chorki_subscriptions.currency": "CAD",
+        "chorki_subscriptions.payment_method": "paypal",
+        "chorki_subscriptions.auto_renewal": "true",
+        "chorki_subscriptions.trial_period": "false",
+        "chorki_subscriptions.start_date": "2024-02-20T14:30:00Z",
+        "chorki_subscriptions.end_date": "2025-02-20T14:30:00Z"
+      },
+      {
+        "uid": "_:sub3",
+        "dgraph.type": "chorki_subscriptions",
+        "chorki_subscriptions.id": "SUB003",
+        "chorki_subscriptions.package": "Premium",
+        "chorki_subscriptions.status": "trial",
+        "chorki_subscriptions.price": "0.00",
+        "chorki_subscriptions.currency": "GBP",
+        "chorki_subscriptions.payment_method": "none",
+        "chorki_subscriptions.auto_renewal": "false",
+        "chorki_subscriptions.trial_period": "true",
+        "chorki_subscriptions.start_date": "2024-09-10T08:15:00Z",
+        "chorki_subscriptions.end_date": "2024-10-10T08:15:00Z"
+      },
+      {
+        "uid": "_:sub4",
+        "dgraph.type": "chorki_subscriptions",
+        "chorki_subscriptions.id": "SUB004",
+        "chorki_subscriptions.package": "Basic",
+        "chorki_subscriptions.status": "expired",
+        "chorki_subscriptions.price": "4.99",
+        "chorki_subscriptions.currency": "AUD",
+        "chorki_subscriptions.payment_method": "credit_card",
+        "chorki_subscriptions.auto_renewal": "false",
+        "chorki_subscriptions.trial_period": "false",
+        "chorki_subscriptions.start_date": "2023-11-05T12:00:00Z",
+        "chorki_subscriptions.end_date": "2024-11-05T12:00:00Z"
+      },
+      {
+        "uid": "_:sub5",
+        "dgraph.type": "chorki_subscriptions",
+        "chorki_subscriptions.id": "SUB005",
+        "chorki_subscriptions.package": "Premium",
+        "chorki_subscriptions.status": "active",
+        "chorki_subscriptions.price": "9.99",
+        "chorki_subscriptions.currency": "USD",
+        "chorki_subscriptions.payment_method": "google_pay",
+        "chorki_subscriptions.auto_renewal": "true",
+        "chorki_subscriptions.trial_period": "false",
+        "chorki_subscriptions.start_date": "2024-03-12T16:45:00Z",
+        "chorki_subscriptions.end_date": "2025-03-12T16:45:00Z"
+      },
+      {
+        "uid": "_:device1",
+        "dgraph.type": "chorki_devices",
+        "chorki_devices.id": "DEV001",
+        "chorki_devices.device_type": "iOS",
+        "chorki_devices.device_model": "iPhone 14 Pro",
+        "chorki_devices.os_version": "17.2",
+        "chorki_devices.app_version": "5.2.1",
+        "chorki_devices.is_active": "true",
+        "chorki_devices.last_used": "2024-10-03T18:30:00Z"
+      },
+      {
+        "uid": "_:device2",
+        "dgraph.type": "chorki_devices",
+        "chorki_devices.id": "DEV002",
+        "chorki_devices.device_type": "Android",
+        "chorki_devices.device_model": "Google Pixel 7",
+        "chorki_devices.os_version": "14.0",
+        "chorki_devices.app_version": "5.1.0",
+        "chorki_devices.is_active": "true",
+        "chorki_devices.last_used": "2024-09-30T12:15:00Z"
+      },
+      {
+        "uid": "_:device3",
+        "dgraph.type": "chorki_devices",
+        "chorki_devices.id": "DEV003",
+        "chorki_devices.device_type": "Web",
+        "chorki_devices.device_model": "Chrome Browser",
+        "chorki_devices.os_version": "Windows 11",
+        "chorki_devices.app_version": "5.2.1",
+        "chorki_devices.is_active": "true",
+        "chorki_devices.last_used": "2024-10-04T09:00:00Z"
+      },
+      {
+        "uid": "_:device4",
+        "dgraph.type": "chorki_devices",
+        "chorki_devices.id": "DEV004",
+        "chorki_devices.device_type": "iOS",
+        "chorki_devices.device_model": "iPad Pro 12.9",
+        "chorki_devices.os_version": "16.5",
+        "chorki_devices.app_version": "4.8.0",
+        "chorki_devices.is_active": "false",
+        "chorki_devices.last_used": "2024-09-05T14:20:00Z"
+      },
+      {
+        "uid": "_:device5",
+        "dgraph.type": "chorki_devices",
+        "chorki_devices.id": "DEV005",
+        "chorki_devices.device_type": "Android",
+        "chorki_devices.device_model": "Samsung Galaxy S23",
+        "chorki_devices.os_version": "14.0",
+        "chorki_devices.app_version": "5.2.0",
+        "chorki_devices.is_active": "true",
+        "chorki_devices.last_used": "2024-10-02T20:45:00Z"
+      },
+      {
+        "uid": "_:content1",
+        "dgraph.type": "chorki_contents",
+        "chorki_contents.id": "CONT001",
+        "chorki_contents.title": "The Dark Knight",
+        "chorki_contents.type": "Movie",
+        "chorki_contents.genre": [
+          "Action",
+          "Drama",
+          "Thriller"
+        ],
+        "chorki_contents.duration": "152",
+        "chorki_contents.rating": "9.0",
+        "chorki_contents.release_date": "2008-07-18T00:00:00Z",
+        "chorki_contents.language": "English",
+        "chorki_contents.director": "Christopher Nolan"
+      },
+      {
+        "uid": "_:content2",
+        "dgraph.type": "chorki_contents",
+        "chorki_contents.id": "CONT002",
+        "chorki_contents.title": "Breaking Bad",
+        "chorki_contents.type": "Series",
+        "chorki_contents.genre": [
+          "Drama",
+          "Crime",
+          "Thriller"
+        ],
+        "chorki_contents.duration": "47",
+        "chorki_contents.rating": "9.5",
+        "chorki_contents.release_date": "2008-01-20T00:00:00Z",
+        "chorki_contents.language": "English",
+        "chorki_contents.director": "Vince Gilligan"
+      },
+      {
+        "uid": "_:content3",
+        "dgraph.type": "chorki_contents",
+        "chorki_contents.id": "CONT003",
+        "chorki_contents.title": "Planet Earth",
+        "chorki_contents.type": "Documentary",
+        "chorki_contents.genre": [
+          "Documentary",
+          "Nature"
+        ],
+        "chorki_contents.duration": "50",
+        "chorki_contents.rating": "9.4",
+        "chorki_contents.release_date": "2006-03-05T00:00:00Z",
+        "chorki_contents.language": "English",
+        "chorki_contents.director": "Alastair Fothergill"
+      },
+      {
+        "uid": "_:watch1",
+        "dgraph.type": "chorki_watch_histories",
+        "chorki_watch_histories.id": "WATCH001",
+        "chorki_watch_histories.content_id": "CONT001",
+        "chorki_watch_histories.content_title": "The Dark Knight",
+        "chorki_watch_histories.type": "Movie",
+        "chorki_watch_histories.genre": [
+          "Action",
+          "Thriller"
+        ],
+        "chorki_watch_histories.watch_date": "2024-10-01T20:00:00Z",
+        "chorki_watch_histories.watch_duration": "152",
+        "chorki_watch_histories.completion_rate": "100.0",
+        "chorki_watch_histories.content": {
+          "uid": "_:content1"
+        }
+      },
+      {
+        "uid": "_:watch2",
+        "dgraph.type": "chorki_watch_histories",
+        "chorki_watch_histories.id": "WATCH002",
+        "chorki_watch_histories.content_id": "CONT002",
+        "chorki_watch_histories.content_title": "Breaking Bad",
+        "chorki_watch_histories.type": "Series",
+        "chorki_watch_histories.genre": [
+          "Drama",
+          "Crime"
+        ],
+        "chorki_watch_histories.watch_date": "2024-09-28T19:30:00Z",
+        "chorki_watch_histories.watch_duration": "35",
+        "chorki_watch_histories.completion_rate": "74.5",
+        "chorki_watch_histories.content": {
+          "uid": "_:content2"
+        }
+      },
+      {
+        "uid": "_:watch3",
+        "dgraph.type": "chorki_watch_histories",
+        "chorki_watch_histories.id": "WATCH003",
+        "chorki_watch_histories.content_id": "CONT003",
+        "chorki_watch_histories.content_title": "Planet Earth",
+        "chorki_watch_histories.type": "Documentary",
+        "chorki_watch_histories.genre": [
+          "Documentary",
+          "Nature"
+        ],
+        "chorki_watch_histories.watch_date": "2024-09-25T15:00:00Z",
+        "chorki_watch_histories.watch_duration": "50",
+        "chorki_watch_histories.completion_rate": "100.0",
+        "chorki_watch_histories.content": {
+          "uid": "_:content3"
+        }
+      },
+      {
+        "uid": "_:watch4",
+        "dgraph.type": "chorki_watch_histories",
+        "chorki_watch_histories.id": "WATCH004",
+        "chorki_watch_histories.content_id": "CONT001",
+        "chorki_watch_histories.content_title": "The Dark Knight",
+        "chorki_watch_histories.type": "Movie",
+        "chorki_watch_histories.genre": [
+          "Action"
+        ],
+        "chorki_watch_histories.watch_date": "2024-10-03T21:00:00Z",
+        "chorki_watch_histories.watch_duration": "152",
+        "chorki_watch_histories.completion_rate": "100.0",
+        "chorki_watch_histories.content": {
+          "uid": "_:content1"
+        }
+      },
+      {
+        "uid": "_:watch5",
+        "dgraph.type": "chorki_watch_histories",
+        "chorki_watch_histories.id": "WATCH005",
+        "chorki_watch_histories.content_id": "CONT002",
+        "chorki_watch_histories.content_title": "Breaking Bad",
+        "chorki_watch_histories.type": "Series",
+        "chorki_watch_histories.genre": [
+          "Drama"
+        ],
+        "chorki_watch_histories.watch_date": "2024-10-02T18:45:00Z",
+        "chorki_watch_histories.watch_duration": "47",
+        "chorki_watch_histories.completion_rate": "100.0",
+        "chorki_watch_histories.content": {
+          "uid": "_:content2"
+        }
+      }
+    ]
+  
+}
