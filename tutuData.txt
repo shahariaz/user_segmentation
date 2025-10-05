@@ -32,6 +32,14 @@
           {
             "uid": "_:watch2"
           }
+        ],
+        "customers.purchases": [
+          {
+            "uid": "_:purchase1"
+          },
+          {
+            "uid": "_:purchase2"
+          }
         ]
       },
       {
@@ -61,6 +69,11 @@
         "customers.watch_histories": [
           {
             "uid": "_:watch3"
+          }
+        ],
+        "customers.purchases": [
+          {
+            "uid": "_:purchase3"
           }
         ]
       },
@@ -92,6 +105,11 @@
           {
             "uid": "_:watch4"
           }
+        ],
+        "customers.purchases": [
+          {
+            "uid": "_:purchase4"
+          }
         ]
       },
       {
@@ -116,6 +134,11 @@
         "customers.devices": [
           {
             "uid": "_:device4"
+          }
+        ],
+        "customers.purchases": [
+          {
+            "uid": "_:purchase4"
           }
         ]
       },
@@ -146,6 +169,11 @@
         "customers.watch_histories": [
           {
             "uid": "_:watch5"
+          }
+        ],
+        "customers.purchases": [
+          {
+            "uid": "_:purchase5"
           }
         ]
       },
@@ -411,6 +439,56 @@
         "watch_histories.content": {
           "uid": "_:content2"
         }
+      },
+      {
+        "uid": "_:purchase1",
+        "dgraph.type": "purchases",
+        "purchases.id": "PUR001",
+        "purchases.purchasable_id": "PREMIUM_CONTENT_001",
+        "purchases.status": "completed",
+        "purchases.amount": "19.99",
+        "purchases.currency": "USD",
+        "purchases.created_at": "2024-01-16T11:30:00Z"
+      },
+      {
+        "uid": "_:purchase2",
+        "dgraph.type": "purchases",
+        "purchases.id": "PUR002",
+        "purchases.purchasable_id": "MOVIE_RENT_001",
+        "purchases.status": "completed",
+        "purchases.amount": "4.99",
+        "purchases.currency": "USD",
+        "purchases.created_at": "2024-02-01T20:15:00Z"
+      },
+      {
+        "uid": "_:purchase3",
+        "dgraph.type": "purchases",
+        "purchases.id": "PUR003",
+        "purchases.purchasable_id": "DOCUMENTARY_PACK_001",
+        "purchases.status": "completed",
+        "purchases.amount": "12.99",
+        "purchases.currency": "GBP",
+        "purchases.created_at": "2024-09-11T14:20:00Z"
+      },
+      {
+        "uid": "_:purchase4",
+        "dgraph.type": "purchases",
+        "purchases.id": "PUR004",
+        "purchases.purchasable_id": "PREMIUM_UPGRADE_001",
+        "purchases.status": "refunded",
+        "purchases.amount": "9.99",
+        "purchases.currency": "AUD",
+        "purchases.created_at": "2024-01-10T09:45:00Z"
+      },
+      {
+        "uid": "_:purchase5",
+        "dgraph.type": "purchases",
+        "purchases.id": "PUR005",
+        "purchases.purchasable_id": "SERIES_SEASON_001",
+        "purchases.status": "completed",
+        "purchases.amount": "29.99",
+        "purchases.currency": "USD",
+        "purchases.created_at": "2024-03-15T18:30:00Z"
       }
     ]
   

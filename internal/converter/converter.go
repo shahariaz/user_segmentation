@@ -113,6 +113,8 @@ func (c *Converter) getForwardPredicate(entityType string) string {
 		return "customers.devices"
 	case "watch_histories":
 		return "customers.watch_histories"
+	case "purchases":
+		return "customers.purchases"
 	default:
 		return ""
 	}

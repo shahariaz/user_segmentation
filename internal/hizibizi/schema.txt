@@ -14,6 +14,7 @@ type customers {
   customers.subscriptions
   customers.devices
   customers.watch_histories
+  customers.purchases
 }
 
 
@@ -33,6 +34,7 @@ customers.created_at: datetime @index(day) .
 customers.subscriptions: [uid] @reverse .
 customers.devices: [uid] @reverse .
 customers.watch_histories: [uid] @reverse .
+customers.purchases: [uid] @reverse .
 
 
 type subscriptions {
@@ -131,3 +133,21 @@ contents.release_date: datetime @index(day) .
 contents.language: string @index(exact) .
 contents.director: string @index(term) .
 contents.cast: [string] @index(term) .
+
+
+type purchases {
+  purchases.id
+  purchases.purchasable_id
+  purchases.status
+  purchases.amount
+  purchases.currency
+  purchases.created_at
+}
+
+
+purchases.id: string @index(exact) .
+purchases.purchasable_id: string @index(exact, hash) .
+purchases.status: string @index(exact, hash) .
+purchases.amount: float @index(float) .
+purchases.currency: string @index(exact) .
+purchases.created_at: datetime @index(day) .

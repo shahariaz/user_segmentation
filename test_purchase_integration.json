@@ -1,0 +1,32 @@
+{
+  "combine_with": "AND",
+  "groups": [
+    {
+      "combine_with": "OR",
+      "filters": [
+        {
+          "field": "purchase_status",
+          "op": "=",
+          "value": "completed"
+        },
+        {
+          "field": "purchasable_id",
+          "op": "IN",
+          "value": ["PREMIUM_CONTENT_001", "MOVIE_RENT_001"]
+        }
+      ]
+    },
+    {
+      "combine_with": "AND",
+      "filters": [
+        {
+          "field": "is_active",
+          "op": "=",
+          "value": true
+        }
+      ]
+    }
+  ],
+  "limit": 100,
+  "offset": 0
+}

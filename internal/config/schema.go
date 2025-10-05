@@ -5,7 +5,7 @@ import models "github.com/shahariaz/user_segmentation/internal/model"
 // GetSchemaConfig returns the predefined schema configuration for the platform
 func GetSchemaConfig() *models.SchemaInfo {
 	return &models.SchemaInfo{
-		EntityTypes:   []string{"customers", "subscriptions", "watch_histories", "contents", "devices"},
+		EntityTypes:   []string{"customers", "subscriptions", "watch_histories", "contents", "devices", "purchases"},
 		FieldMappings: getFieldMappings(),
 		Relationships: getRelationships(),
 		DefaultFields: getDefaultFields(),
@@ -102,6 +102,14 @@ func getFieldMappings() map[string][]models.FieldMapping {
 			{JSONField: "os_version", DgraphField: "devices.os_version", EntityType: "devices", DataType: "string"},
 		},
 
+		// Purchase fields
+		"purchasable_id": {
+			{JSONField: "purchasable_id", DgraphField: "purchases.purchasable_id", EntityType: "purchases", DataType: "string"},
+		},
+		"purchase_status": {
+			{JSONField: "purchase_status", DgraphField: "purchases.status", EntityType: "purchases", DataType: "string"},
+		},
+
 		// Datetime fields for customers
 		"created_at": {
 			{JSONField: "created_at", DgraphField: "customers.created_at", EntityType: "customers", DataType: "datetime"},
@@ -174,6 +182,7 @@ func getRelationships() map[string][]string {
 			"subscriptions",
 			"watch_histories",
 			"devices",
+			"purchases",
 		},
 		"subscriptions": {
 			"customers",
@@ -187,6 +196,9 @@ func getRelationships() map[string][]string {
 		},
 		"contents": {
 			"watch_histories",
+		},
+		"purchases": {
+			"customers",
 		},
 	}
 }
@@ -241,6 +253,14 @@ func getDefaultFields() map[string][]string {
 			"devices.app_version",
 			"devices.is_active",
 		},
+		"purchases": {
+			"uid",
+			"purchases.id",
+			"purchases.purchasable_id",
+			"purchases.status",
+			"purchases.amount",
+			"purchases.created_at",
+		},
 	}
 }
 
@@ -280,6 +300,7 @@ func GetReversePredicates() map[string]string {
 		"devices":         "~customers.devices",
 		"watch_histories": "~customers.watch_histories",
 		"contents":        "~watch_histories.content",
+		"purchases":       "~customers.purchases",
 	}
 }
 
