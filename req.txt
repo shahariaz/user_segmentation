@@ -1,0 +1,68 @@
+go
+package filters
+
+type FieldConfig struct {
+ Field       string
+ Type        string
+ Actions     map[string]string
+ Table       string
+ Column      string
+ ContentType string
+}
+
+var FieldMap = map[string]FieldConfig{
+ "user_id": {
+  Field:   "user_id",
+  Type:    "text",
+  Actions: map[string]string{"=": "eq", "LIKE": "regexp"},
+  Table:   "Customer",
+  Column:  "id",
+ },
+ "age": {
+  Field:   "age",
+  Type:    "number",
+  Actions: map[string]string{">": "gt", "<": "lt"},
+  Table:   "Customer",
+  Column:  "date_of_birth", // handled as DOB cutoff
+ },
+ "watched_content": {
+  Field:       "watched_content",
+  Type:        "select2",
+  ContentType: "",
+  Actions:     map[string]string{"IN": "in", "NOT IN": "not_in"},
+  Table:       "WatchHistory",
+  Column:      "content_id",
+ },
+ "watched_content_by": {
+  Field:       "watched_content_by",
+  Type:        "select2",
+  ContentType: "",
+  Actions:     map[string]string{"IN": "in", "NOT IN": "not_in"},
+  Table:       "WatchHistory",
+  Column:      "content_id",
+ },
+ "watched_at": {
+  Field:       "watched_at",
+  Type:        "date",
+  Actions:     map[string]string{"<": "lt", ">": "gt", "between": "between"},
+  Table:       "WatchHistory",
+  Column:      "watched_at",
+ },
+ "purchasable_id": {
+  Field:   "purchasable_id",
+  Type:    "text",
+  Actions: map[string]string{"=": "eq"},
+  Table:   "Purchase",
+  Column:  "purchasable_id",
+ },
+ "purchase_status": {
+  Field:   "purchase_status",
+  Type:    "text",
+  Actions: map[string]string{"IN": "in"},
+  Table:   "Purchase",
+  Column:  "status",
+ },
+}
+
+
+select * from `customers` where (TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) > ? or exists (select * from `watch_histories` where `customers`.`id` = `watch_histories`.`customer_id` and `content_id` is not null and `content_type` = ? and `content_id` in (?) and `watch_histories`.`deleted_at` is null)) and (exists (select * from `purchases` where `customers`.`id` = `purchases`.`customer_id` and `purchasable_id` = ?) or exists (select * from `purchases` where `customers`.`id` = `purchases`.`customer_id` and `status` is not null and `status` in (?))) and `customers`.`deleted_at` is null

@@ -1,0 +1,40 @@
+{
+  "combine_with": "AND",
+  "groups": [
+    {
+      "combine_with": "OR",
+      "filters": [
+        {
+          "field": "age",
+          "op": ">",
+          "value": 30
+        },
+        {
+          "field": "watched_content",
+          "op": "IN",
+          "value": {
+            "content_type": "Movie",
+            "ids": ["CONT001"]
+          }
+        }
+      ]
+    },
+    {
+      "combine_with": "OR",
+      "filters": [
+        {
+          "field": "purchasable_id",
+          "op": "IN",
+          "value": ["PREMIUM_CONTENT_001", "MOVIE_RENT_001", "SERIES_SEASON_001"]
+        },
+        {
+          "field": "purchase_status",
+          "op": "=",
+          "value": "completed"
+        }
+      ]
+    }
+  ],
+  "limit": 100,
+  "offset": 0
+}

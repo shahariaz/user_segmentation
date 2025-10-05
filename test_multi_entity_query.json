@@ -1,0 +1,47 @@
+{
+  "combine_with": "AND",
+  "groups": [
+    {
+      "combine_with": "AND",
+      "filters": [
+        {
+          "field": "country",
+          "op": "IN",
+          "value": ["USA", "Canada"]
+        },
+        {
+          "field": "is_active",
+          "op": "=",
+          "value": true
+        }
+      ]
+    },
+    {
+      "combine_with": "OR",
+      "filters": [
+        {
+          "field": "subscription_status",
+          "op": "=",
+          "value": "active"
+        },
+        {
+          "field": "purchase_status",
+          "op": "=",
+          "value": "completed"
+        }
+      ]
+    },
+    {
+      "combine_with": "AND",
+      "filters": [
+        {
+          "field": "device",
+          "op": "IN",
+          "value": ["iPhone", "Android", "Samsung"]
+        }
+      ]
+    }
+  ],
+  "limit": 50,
+  "offset": 0
+}

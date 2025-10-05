@@ -1,0 +1,50 @@
+{
+  "combine_with": "AND",
+  "groups": [
+    {
+      "combine_with": "OR",
+      "filters": [
+        {
+          "field": "age",
+          "op": ">",
+          "value": 25
+        },
+        {
+          "field": "watched_content",
+          "op": "IN",
+          "value": {
+            "content_type": "Movie",
+            "ids": ["CONT001", "CONT002"]
+          }
+        }
+      ]
+    },
+    {
+      "combine_with": "OR",
+      "filters": [
+        {
+          "field": "purchasable_id",
+          "op": "=",
+          "value": "PREMIUM_CONTENT_001"
+        },
+        {
+          "field": "purchase_status",
+          "op": "IN",
+          "value": ["completed", "active"]
+        }
+      ]
+    },
+    {
+      "combine_with": "AND",
+      "filters": [
+        {
+          "field": "is_active",
+          "op": "=",
+          "value": true
+        }
+      ]
+    }
+  ],
+  "limit": 100,
+  "offset": 0
+}

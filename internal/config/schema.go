@@ -2,16 +2,10 @@ package config
 
 import models "github.com/shahariaz/user_segmentation/internal/model"
 
-// GetSchemaConfig returns the predefined schema configuration for Chorki platform
+// GetSchemaConfig returns the predefined schema configuration for the platform
 func GetSchemaConfig() *models.SchemaInfo {
 	return &models.SchemaInfo{
-		EntityTypes: []string{
-			"chorki_customers",
-			"chorki_subscriptions",
-			"chorki_watch_histories",
-			"chorki_contents",
-			"chorki_devices",
-		},
+		EntityTypes:   []string{"customers", "subscriptions", "watch_histories", "contents", "devices", "purchases"},
 		FieldMappings: getFieldMappings(),
 		Relationships: getRelationships(),
 		DefaultFields: getDefaultFields(),
@@ -20,175 +14,256 @@ func GetSchemaConfig() *models.SchemaInfo {
 
 func getFieldMappings() map[string][]models.FieldMapping {
 	return map[string][]models.FieldMapping{
-
+		// Customer fields
 		"age": {
-			{JSONField: "age", DgraphField: "chorki_customers.age", EntityType: "chorki_customers", DataType: "int"},
+			{JSONField: "age", DgraphField: "customers.age", EntityType: "customers", DataType: "int"},
 		},
 		"country": {
-			{JSONField: "country", DgraphField: "chorki_customers.country", EntityType: "chorki_customers", DataType: "string"},
+			{JSONField: "country", DgraphField: "customers.country", EntityType: "customers", DataType: "string"},
 		},
 		"device": {
-			{JSONField: "device", DgraphField: "chorki_devices.device_type", EntityType: "chorki_devices", DataType: "string"},
-			{JSONField: "device", DgraphField: "chorki_customers.device", EntityType: "chorki_customers", DataType: "string"},
+			{JSONField: "device", DgraphField: "devices.device_type", EntityType: "devices", DataType: "string"},
+			{JSONField: "device", DgraphField: "customers.device", EntityType: "customers", DataType: "string"},
 		},
 		"app_version": {
-			{JSONField: "app_version", DgraphField: "chorki_customers.app_version", EntityType: "chorki_customers", DataType: "string"},
-			{JSONField: "app_version", DgraphField: "chorki_devices.app_version", EntityType: "chorki_devices", DataType: "string"},
+			{JSONField: "app_version", DgraphField: "customers.app_version", EntityType: "customers", DataType: "string"},
+			{JSONField: "app_version", DgraphField: "devices.app_version", EntityType: "devices", DataType: "string"},
 		},
 		"last_login_days": {
-			{JSONField: "last_login_days", DgraphField: "chorki_customers.last_login_days", EntityType: "chorki_customers", DataType: "int"},
+			{JSONField: "last_login_days", DgraphField: "customers.last_login_days", EntityType: "customers", DataType: "int"},
 		},
 		"email": {
-			{JSONField: "email", DgraphField: "chorki_customers.email", EntityType: "chorki_customers", DataType: "string"},
+			{JSONField: "email", DgraphField: "customers.email", EntityType: "customers", DataType: "string"},
 		},
 		"name": {
-			{JSONField: "name", DgraphField: "chorki_customers.name", EntityType: "chorki_customers", DataType: "string"},
+			{JSONField: "name", DgraphField: "customers.name", EntityType: "customers", DataType: "string"},
 		},
 		"is_active": {
-			{JSONField: "is_active", DgraphField: "chorki_customers.is_active", EntityType: "chorki_customers", DataType: "bool"},
+			{JSONField: "is_active", DgraphField: "customers.is_active", EntityType: "customers", DataType: "bool"},
 		},
 		"city": {
-			{JSONField: "city", DgraphField: "chorki_customers.city", EntityType: "chorki_customers", DataType: "string"},
+			{JSONField: "city", DgraphField: "customers.city", EntityType: "customers", DataType: "string"},
 		},
 
 		// Subscription fields
 		"subscription_status": {
-			{JSONField: "subscription_status", DgraphField: "chorki_subscriptions.status", EntityType: "chorki_subscriptions", DataType: "string"},
+			{JSONField: "subscription_status", DgraphField: "subscriptions.status", EntityType: "subscriptions", DataType: "string"},
 		},
 		"subscribed_package": {
-			{JSONField: "subscribed_package", DgraphField: "chorki_subscriptions.package", EntityType: "chorki_subscriptions", DataType: "string"},
+			{JSONField: "subscribed_package", DgraphField: "subscriptions.package", EntityType: "subscriptions", DataType: "string"},
 		},
 		"package": {
-			{JSONField: "package", DgraphField: "chorki_subscriptions.package", EntityType: "chorki_subscriptions", DataType: "string"},
+			{JSONField: "package", DgraphField: "subscriptions.package", EntityType: "subscriptions", DataType: "string"},
 		},
 		"status": {
-			{JSONField: "status", DgraphField: "chorki_subscriptions.status", EntityType: "chorki_subscriptions", DataType: "string"},
+			{JSONField: "status", DgraphField: "subscriptions.status", EntityType: "subscriptions", DataType: "string"},
 		},
 		"price": {
-			{JSONField: "price", DgraphField: "chorki_subscriptions.price", EntityType: "chorki_subscriptions", DataType: "float"},
+			{JSONField: "price", DgraphField: "subscriptions.price", EntityType: "subscriptions", DataType: "float"},
 		},
 		"currency": {
-			{JSONField: "currency", DgraphField: "chorki_subscriptions.currency", EntityType: "chorki_subscriptions", DataType: "string"},
+			{JSONField: "currency", DgraphField: "subscriptions.currency", EntityType: "subscriptions", DataType: "string"},
 		},
 		"payment_method": {
-			{JSONField: "payment_method", DgraphField: "chorki_subscriptions.payment_method", EntityType: "chorki_subscriptions", DataType: "string"},
+			{JSONField: "payment_method", DgraphField: "subscriptions.payment_method", EntityType: "subscriptions", DataType: "string"},
 		},
 		"auto_renewal": {
-			{JSONField: "auto_renewal", DgraphField: "chorki_subscriptions.auto_renewal", EntityType: "chorki_subscriptions", DataType: "bool"},
+			{JSONField: "auto_renewal", DgraphField: "subscriptions.auto_renewal", EntityType: "subscriptions", DataType: "bool"},
 		},
 		"trial_period": {
-			{JSONField: "trial_period", DgraphField: "chorki_subscriptions.trial_period", EntityType: "chorki_subscriptions", DataType: "bool"},
+			{JSONField: "trial_period", DgraphField: "subscriptions.trial_period", EntityType: "subscriptions", DataType: "bool"},
 		},
 
 		// Watch history fields
 		"watched_content": {
-			{JSONField: "watched_content", DgraphField: "chorki_watch_histories.content_id", EntityType: "chorki_watch_histories", DataType: "complex"},
+			{JSONField: "watched_content", DgraphField: "watch_histories.content_id", EntityType: "watch_histories", DataType: "complex"},
 		},
 		"favorite_genres": {
-			{JSONField: "favorite_genres", DgraphField: "chorki_watch_histories.genre", EntityType: "chorki_watch_histories", DataType: "array"},
+			{JSONField: "favorite_genres", DgraphField: "watch_histories.genre", EntityType: "watch_histories", DataType: "array"},
 		},
 		"content_type": {
-			{JSONField: "content_type", DgraphField: "chorki_watch_histories.type", EntityType: "chorki_watch_histories", DataType: "string"},
-			{JSONField: "content_type", DgraphField: "chorki_contents.type", EntityType: "chorki_contents", DataType: "string"},
+			{JSONField: "content_type", DgraphField: "watch_histories.type", EntityType: "watch_histories", DataType: "string"},
+			{JSONField: "content_type", DgraphField: "contents.type", EntityType: "contents", DataType: "string"},
 		},
 
 		// Content fields
 		"genre": {
-			{JSONField: "genre", DgraphField: "chorki_contents.genre", EntityType: "chorki_contents", DataType: "array"},
+			{JSONField: "genre", DgraphField: "contents.genre", EntityType: "contents", DataType: "array"},
 		},
 		"title": {
-			{JSONField: "title", DgraphField: "chorki_contents.title", EntityType: "chorki_contents", DataType: "string"},
+			{JSONField: "title", DgraphField: "contents.title", EntityType: "contents", DataType: "string"},
 		},
 
 		// Device fields
 		"device_type": {
-			{JSONField: "device_type", DgraphField: "chorki_devices.device_type", EntityType: "chorki_devices", DataType: "string"},
+			{JSONField: "device_type", DgraphField: "devices.device_type", EntityType: "devices", DataType: "string"},
 		},
 		"os_version": {
-			{JSONField: "os_version", DgraphField: "chorki_devices.os_version", EntityType: "chorki_devices", DataType: "string"},
+			{JSONField: "os_version", DgraphField: "devices.os_version", EntityType: "devices", DataType: "string"},
+		},
+
+		// Purchase fields
+		"purchasable_id": {
+			{JSONField: "purchasable_id", DgraphField: "purchases.purchasable_id", EntityType: "purchases", DataType: "string"},
+		},
+		"purchase_status": {
+			{JSONField: "purchase_status", DgraphField: "purchases.status", EntityType: "purchases", DataType: "string"},
+		},
+
+		// Datetime fields for customers
+		"created_at": {
+			{JSONField: "created_at", DgraphField: "customers.created_at", EntityType: "customers", DataType: "datetime"},
+		},
+		"updated_at": {
+			{JSONField: "updated_at", DgraphField: "customers.updated_at", EntityType: "customers", DataType: "datetime"},
+		},
+		"last_login_date": {
+			{JSONField: "last_login_date", DgraphField: "customers.last_login_date", EntityType: "customers", DataType: "datetime"},
+		},
+		"registration_date": {
+			{JSONField: "registration_date", DgraphField: "customers.created_at", EntityType: "customers", DataType: "datetime"},
+		},
+
+		// Datetime fields for subscriptions
+		"subscription_start_date": {
+			{JSONField: "subscription_start_date", DgraphField: "subscriptions.start_date", EntityType: "subscriptions", DataType: "datetime"},
+		},
+		"subscription_end_date": {
+			{JSONField: "subscription_end_date", DgraphField: "subscriptions.end_date", EntityType: "subscriptions", DataType: "datetime"},
+		},
+		"subscription_created_at": {
+			{JSONField: "subscription_created_at", DgraphField: "subscriptions.created_at", EntityType: "subscriptions", DataType: "datetime"},
+		},
+		"start_date": {
+			{JSONField: "start_date", DgraphField: "subscriptions.start_date", EntityType: "subscriptions", DataType: "datetime"},
+		},
+		"end_date": {
+			{JSONField: "end_date", DgraphField: "subscriptions.end_date", EntityType: "subscriptions", DataType: "datetime"},
+		},
+
+		// Datetime fields for watch history
+		"watch_date": {
+			{JSONField: "watch_date", DgraphField: "watch_histories.watch_date", EntityType: "watch_histories", DataType: "datetime"},
+		},
+		"watched_at": {
+			{JSONField: "watched_at", DgraphField: "watch_histories.watch_date", EntityType: "watch_histories", DataType: "datetime"},
+		},
+		"watch_history_created_at": {
+			{JSONField: "watch_history_created_at", DgraphField: "watch_histories.created_at", EntityType: "watch_histories", DataType: "datetime"},
+		},
+
+		// Datetime fields for content
+		"content_release_date": {
+			{JSONField: "content_release_date", DgraphField: "contents.release_date", EntityType: "contents", DataType: "datetime"},
+		},
+		"content_created_at": {
+			{JSONField: "content_created_at", DgraphField: "contents.created_at", EntityType: "contents", DataType: "datetime"},
+		},
+		"release_date": {
+			{JSONField: "release_date", DgraphField: "contents.release_date", EntityType: "contents", DataType: "datetime"},
+		},
+
+		// Datetime fields for devices
+		"device_last_seen": {
+			{JSONField: "device_last_seen", DgraphField: "devices.last_seen", EntityType: "devices", DataType: "datetime"},
+		},
+		"device_created_at": {
+			{JSONField: "device_created_at", DgraphField: "devices.created_at", EntityType: "devices", DataType: "datetime"},
+		},
+		"last_used": {
+			{JSONField: "last_used", DgraphField: "devices.last_used", EntityType: "devices", DataType: "datetime"},
 		},
 	}
 }
 
-// getRelationships returns the relationships between entity types
 func getRelationships() map[string][]string {
 	return map[string][]string{
-		"chorki_customers": {
-			"chorki_subscriptions",
-			"chorki_watch_histories",
-			"chorki_devices",
+		"customers": {
+			"subscriptions",
+			"watch_histories",
+			"devices",
+			"purchases",
 		},
-		"chorki_subscriptions": {
-			"chorki_customers",
+		"subscriptions": {
+			"customers",
 		},
-		"chorki_watch_histories": {
-			"chorki_customers",
-			"chorki_contents",
+		"watch_histories": {
+			"customers",
+			"contents",
 		},
-		"chorki_devices": {
-			"chorki_customers",
+		"devices": {
+			"customers",
 		},
-		"chorki_contents": {
-			"chorki_watch_histories",
+		"contents": {
+			"watch_histories",
+		},
+		"purchases": {
+			"customers",
 		},
 	}
 }
 
-// getDefaultFields returns the default fields to select for each entity type
 func getDefaultFields() map[string][]string {
 	return map[string][]string{
-		"chorki_customers": {
+		"customers": {
 			"uid",
-			"chorki_customers.id",
-			"chorki_customers.name",
-			"chorki_customers.email",
-			"chorki_customers.age",
-			"chorki_customers.country",
-			"chorki_customers.city",
-			"chorki_customers.device",
-			"chorki_customers.app_version",
-			"chorki_customers.last_login_days",
-			"chorki_customers.is_active",
-			"chorki_customers.created_at",
+			"customers.id",
+			"customers.name",
+			"customers.email",
+			"customers.age",
+			"customers.country",
+			"customers.city",
+			"customers.device",
+			"customers.app_version",
+			"customers.last_login_days",
+			"customers.is_active",
+			"customers.created_at",
 		},
-		"chorki_subscriptions": {
+		"subscriptions": {
 			"uid",
-			"chorki_subscriptions.id",
-			"chorki_subscriptions.package",
-			"chorki_subscriptions.status",
-			"chorki_subscriptions.start_date",
-			"chorki_subscriptions.end_date",
+			"subscriptions.id",
+			"subscriptions.package",
+			"subscriptions.status",
+			"subscriptions.start_date",
+			"subscriptions.end_date",
 		},
-		"chorki_watch_histories": {
+		"watch_histories": {
 			"uid",
-			"chorki_watch_histories.id",
-			"chorki_watch_histories.content_id",
-			"chorki_watch_histories.content_title",
-			"chorki_watch_histories.type",
-			"chorki_watch_histories.genre",
-			"chorki_watch_histories.watch_date",
+			"watch_histories.id",
+			"watch_histories.content_id",
+			"watch_histories.content_title",
+			"watch_histories.type",
+			"watch_histories.genre",
+			"watch_histories.watch_date",
 		},
-		"chorki_contents": {
+		"contents": {
 			"uid",
-			"chorki_contents.id",
-			"chorki_contents.title",
-			"chorki_contents.type",
-			"chorki_contents.genre",
-			"chorki_contents.duration",
-			"chorki_contents.rating",
+			"contents.id",
+			"contents.title",
+			"contents.type",
+			"contents.genre",
+			"contents.duration",
+			"contents.rating",
 		},
-		"chorki_devices": {
+		"devices": {
 			"uid",
-			"chorki_devices.id",
-			"chorki_devices.device_type",
-			"chorki_devices.device_model",
-			"chorki_devices.app_version",
-			"chorki_devices.is_active",
+			"devices.id",
+			"devices.device_type",
+			"devices.device_model",
+			"devices.app_version",
+			"devices.is_active",
+		},
+		"purchases": {
+			"uid",
+			"purchases.id",
+			"purchases.purchasable_id",
+			"purchases.status",
+			"purchases.amount",
+			"purchases.created_at",
 		},
 	}
 }
 
-// GetOperatorMappings returns the mapping between JSON operators and DQL functions
 func GetOperatorMappings() map[string]string {
 	return map[string]string{
 		"=":           "eq",
@@ -211,7 +286,6 @@ func GetOperatorMappings() map[string]string {
 	}
 }
 
-// GetVersionFields returns fields that should be treated as version fields
 func GetVersionFields() map[string]string {
 	return map[string]string{
 		"app_version": "numeric",
@@ -220,26 +294,26 @@ func GetVersionFields() map[string]string {
 	}
 }
 
-// GetReversePredicates returns the reverse predicate mappings
 func GetReversePredicates() map[string]string {
 	return map[string]string{
-		"chorki_subscriptions": "~chorki_customers.subscriptions",
-		"chorki_devices":       "~chorki_customers.devices", 
-		"chorki_watch_histories": "~chorki_customers.watch_histories",
-		"chorki_contents":      "~chorki_watch_histories.content",
+		"subscriptions":   "~customers.subscriptions",
+		"devices":         "~customers.devices",
+		"watch_histories": "~customers.watch_histories",
+		"contents":        "~watch_histories.content",
+		"purchases":       "~customers.purchases",
 	}
 }
 
-// GetFilterOptimizations returns suggested filter optimizations for common patterns
+// GetFilterOptimizations returns common filter optimization patterns
 func GetFilterOptimizations() map[string][]string {
 	return map[string][]string{
 		"subscription_status_premium": {
-			"eq(chorki_subscriptions.package, \"Premium\")",
-			"(eq(chorki_subscriptions.status, \"active\") OR eq(chorki_subscriptions.status, \"trial\"))",
+			"eq(subscriptions.package, \"Premium\")",
+			"(eq(subscriptions.status, \"active\") OR eq(subscriptions.status, \"trial\"))",
 		},
 		"subscription_status_basic": {
-			"eq(chorki_subscriptions.package, \"Basic\")",
-			"eq(chorki_subscriptions.status, \"active\")",
+			"eq(subscriptions.package, \"Basic\")",
+			"eq(subscriptions.status, \"active\")",
 		},
 	}
 }

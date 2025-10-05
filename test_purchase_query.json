@@ -1,0 +1,22 @@
+{
+  "combine_with": "AND",
+  "groups": [
+    {
+      "combine_with": "AND",
+      "filters": [
+        {
+          "field": "purchasable_id",
+          "op": "=",
+          "value": "PROD123"
+        },
+        {
+          "field": "purchase_status",
+          "op": "IN",
+          "value": ["completed", "active"]
+        }
+      ]
+    }
+  ],
+  "limit": 50,
+  "offset": 0
+}

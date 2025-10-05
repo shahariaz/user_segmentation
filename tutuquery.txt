@@ -1,0 +1,568 @@
+{
+  "queries": [
+    {
+      "name": "Query 1 - Simple: Active customers only",
+      "description": "Find all active customers",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "is_active",
+                "op": "=",
+                "value": true
+              }
+            ]
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 2 - Simple: iOS users",
+      "description": "Find customers using iOS devices",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "device",
+                "op": "=",
+                "value": "iOS"
+              }
+            ]
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 3 - Medium: Active subscribers with specific device",
+      "description": "Find active customers with Premium subscription using iOS or Android",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "device",
+                "op": "IN",
+                "value": ["iOS", "Android"]
+              },
+              {
+                "field": "subscription_status",
+                "op": "=",
+                "value": "active"
+              },
+              {
+                "field": "subscribed_package",
+                "op": "=",
+                "value": "Premium"
+              }
+            ]
+          }
+        ],
+        "limit": 50,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 4 - Medium: Recent active users by location",
+      "description": "Find customers who logged in within 7 days from USA or Canada",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "last_login_days",
+                "op": "<=",
+                "value": 7
+              },
+              {
+                "field": "country",
+                "op": "IN",
+                "value": ["USA", "Canada"]
+              },
+              {
+                "field": "is_active",
+                "op": "=",
+                "value": true
+              }
+            ]
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 5 - Medium: Age and subscription filters",
+      "description": "Find customers aged 25-40 with active Premium subscription",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "age",
+                "op": "BETWEEN",
+                "value": [25, 40]
+              },
+              {
+                "field": "subscribed_package",
+                "op": "=",
+                "value": "Premium"
+              },
+              {
+                "field": "subscription_status",
+                "op": "=",
+                "value": "active"
+              }
+            ]
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 6 - Hard: Multiple device types OR subscription status",
+      "description": "Find users with (iOS OR Android OR Web) AND (active OR trial subscription)",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "OR",
+            "filters": [
+              {
+                "field": "device",
+                "op": "=",
+                "value": "iOS"
+              },
+              {
+                "field": "device",
+                "op": "=",
+                "value": "Android"
+              },
+              {
+                "field": "device",
+                "op": "=",
+                "value": "Web"
+              }
+            ]
+          },
+          {
+            "combine_with": "OR",
+            "filters": [
+              {
+                "field": "subscription_status",
+                "op": "=",
+                "value": "active"
+              },
+              {
+                "field": "subscription_status",
+                "op": "=",
+                "value": "trial"
+              }
+            ]
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 7 - Hard: Nested groups with demographics",
+      "description": "Complex query: (Age 18-35 from USA) OR (Age 36-50 from UK) with active subscription",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "OR",
+            "groups": [
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "age",
+                    "op": "BETWEEN",
+                    "value": [18, 35]
+                  },
+                  {
+                    "field": "country",
+                    "op": "=",
+                    "value": "USA"
+                  }
+                ]
+              },
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "age",
+                    "op": "BETWEEN",
+                    "value": [36, 50]
+                  },
+                  {
+                    "field": "country",
+                    "op": "=",
+                    "value": "UK"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "subscription_status",
+                "op": "=",
+                "value": "active"
+              }
+            ]
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 8 - Very Hard: Multiple nested conditions",
+      "description": "Find engaged users: Recent login AND (Premium subscriber OR trial) AND (iOS OR Android) AND age 20-45",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "last_login_days",
+                "op": "<=",
+                "value": 7
+              },
+              {
+                "field": "is_active",
+                "op": "=",
+                "value": true
+              },
+              {
+                "field": "age",
+                "op": "BETWEEN",
+                "value": [20, 45]
+              }
+            ]
+          },
+          {
+            "combine_with": "OR",
+            "groups": [
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "subscribed_package",
+                    "op": "=",
+                    "value": "Premium"
+                  },
+                  {
+                    "field": "subscription_status",
+                    "op": "=",
+                    "value": "active"
+                  }
+                ]
+              },
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "subscribed_package",
+                    "op": "=",
+                    "value": "Premium"
+                  },
+                  {
+                    "field": "subscription_status",
+                    "op": "=",
+                    "value": "trial"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "combine_with": "OR",
+            "filters": [
+              {
+                "field": "device",
+                "op": "=",
+                "value": "iOS"
+              },
+              {
+                "field": "device",
+                "op": "=",
+                "value": "Android"
+              }
+            ]
+          }
+        ],
+        "limit": 50,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 9 - Very Hard: Multi-level nested with exclusions",
+      "description": "Complex segmentation: Active users from specific countries, with Premium/trial, excluding Web users, recent activity",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "is_active",
+                "op": "=",
+                "value": true
+              },
+              {
+                "field": "last_login_days",
+                "op": "<=",
+                "value": 7
+              }
+            ]
+          },
+          {
+            "combine_with": "OR",
+            "groups": [
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "country",
+                    "op": "=",
+                    "value": "USA"
+                  },
+                  {
+                    "field": "age",
+                    "op": ">=",
+                    "value": 18
+                  }
+                ]
+              },
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "country",
+                    "op": "IN",
+                    "value": ["UK", "Canada", "Australia"]
+                  },
+                  {
+                    "field": "age",
+                    "op": ">=",
+                    "value": 21
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "combine_with": "OR",
+            "filters": [
+              {
+                "field": "subscribed_package",
+                "op": "=",
+                "value": "Premium"
+              }
+            ],
+            "groups": [
+              {
+                "combine_with": "OR",
+                "filters": [
+                  {
+                    "field": "subscription_status",
+                    "op": "=",
+                    "value": "active"
+                  },
+                  {
+                    "field": "subscription_status",
+                    "op": "=",
+                    "value": "trial"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "device",
+                "op": "NOT_IN",
+                "value": ["Web"]
+              }
+            ]
+          }
+        ],
+        "limit": 100,
+        "offset": 0
+      }
+    },
+    {
+      "name": "Query 10 - Expert: Most complex segmentation",
+      "description": "Ultimate segmentation: Multi-dimensional targeting with all entity types and deep nesting",
+      "query": {
+        "combine_with": "AND",
+        "groups": [
+          {
+            "combine_with": "OR",
+            "groups": [
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "country",
+                    "op": "=",
+                    "value": "USA"
+                  },
+                  {
+                    "field": "age",
+                    "op": "BETWEEN",
+                    "value": [25, 35]
+                  },
+                  {
+                    "field": "last_login_days",
+                    "op": "<=",
+                    "value": 3
+                  }
+                ],
+                "groups": [
+                  {
+                    "combine_with": "OR",
+                    "filters": [
+                      {
+                        "field": "city",
+                        "op": "IN",
+                        "value": ["New York", "Los Angeles", "Chicago"]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "country",
+                    "op": "IN",
+                    "value": ["UK", "Canada"]
+                  },
+                  {
+                    "field": "age",
+                    "op": "BETWEEN",
+                    "value": [30, 45]
+                  },
+                  {
+                    "field": "last_login_days",
+                    "op": "<=",
+                    "value": 5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "combine_with": "AND",
+            "groups": [
+              {
+                "combine_with": "OR",
+                "filters": [
+                  {
+                    "field": "device",
+                    "op": "=",
+                    "value": "iOS"
+                  },
+                  {
+                    "field": "device",
+                    "op": "=",
+                    "value": "Android"
+                  }
+                ]
+              },
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "app_version",
+                    "op": ">=",
+                    "value": "5.0.0"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "combine_with": "OR",
+            "groups": [
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "subscribed_package",
+                    "op": "=",
+                    "value": "Premium"
+                  },
+                  {
+                    "field": "subscription_status",
+                    "op": "IN",
+                    "value": ["active", "trial"]
+                  },
+                  {
+                    "field": "auto_renewal",
+                    "op": "=",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "combine_with": "AND",
+                "filters": [
+                  {
+                    "field": "subscribed_package",
+                    "op": "=",
+                    "value": "Basic"
+                  },
+                  {
+                    "field": "subscription_status",
+                    "op": "=",
+                    "value": "active"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "combine_with": "AND",
+            "filters": [
+              {
+                "field": "is_active",
+                "op": "=",
+                "value": true
+              }
+            ]
+          }
+        ],
+        "limit": 50,
+        "offset": 0
+      }
+    }
+  ]
+}
