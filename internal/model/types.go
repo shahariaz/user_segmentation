@@ -27,14 +27,14 @@ type DQLQuery struct {
 }
 
 type VariableBlock struct {
-	Name     string `json:"name"`     // var0, var1, etc.
-	Type     string `json:"type"`     // Entity type
-	Filter   string `json:"filter"`   // Filter condition
-	Fields   string `json:"fields"`   // Fields to traverse (usually reverse predicates)
+	Name   string `json:"name"`   // var0, var1, etc.
+	Type   string `json:"type"`   // Entity type
+	Filter string `json:"filter"` // Filter condition
+	Fields string `json:"fields"` // Fields to traverse (usually reverse predicates)
 }
 
 type MainQuery struct {
-	Name       string `json:"name"`       // Query name (e.g., "chorki_customers")
+	Name       string `json:"name"`       // Query name (e.g., "customers")
 	Type       string `json:"type"`       // Entity type
 	Function   string `json:"function"`   // func: type(entity)
 	Filter     string `json:"filter"`     // Main filter with uid references

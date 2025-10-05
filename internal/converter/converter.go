@@ -28,55 +28,49 @@ func NewConverter() *Converter {
 }
 
 func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery, error) {
-	const mainEntityType = "chorki_customers"
-	
-	
+	const mainEntityType = "customers"
+
 	mainEntityFilters, crossEntityFilters := c.categorizeFilters(jsonQuery, mainEntityType)
-	
 
 	var variables []models.VariableBlock
 	var uidReferences []string
 	varCounter := 0
-	
+
 	for entityType, filters := range crossEntityFilters {
 		if len(filters) > 0 {
 			varName := fmt.Sprintf("var%d", varCounter)
 			varCounter++
-			
-		
+
 			filterCondition := c.buildGroupFiltersForEntity(filters, entityType)
-			
-			
+
 			forwardPredicate := c.getForwardPredicate(entityType)
 			if forwardPredicate == "" {
-				continue 
+				continue
 			}
-			
-			
+
 			variable := models.VariableBlock{
 				Name:   varName,
-				Type:   mainEntityType, 
-				Filter: "", 
+				Type:   mainEntityType,
+				Filter: "",
 				Fields: fmt.Sprintf("    %s @filter(%s)", forwardPredicate, filterCondition),
 			}
-			
+
 			variables = append(variables, variable)
 			uidReferences = append(uidReferences, fmt.Sprintf("uid(%s)", varName))
 		}
 	}
-	
 
 	var mainFilterParts []string
-	
-	
+
 	if len(uidReferences) > 0 {
 		mainFilterParts = append(mainFilterParts, strings.Join(uidReferences, " AND "))
 	}
-	
 
 	if len(mainEntityFilters) > 0 {
 		mainCondition := c.buildGroupFiltersForEntity(mainEntityFilters, mainEntityType)
-		mainFilterParts = append(mainFilterParts, mainCondition)
+		if mainCondition != "" {
+			mainFilterParts = append(mainFilterParts, mainCondition)
+		}
 	}
 
 	var mainFilter string
@@ -88,7 +82,6 @@ func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery,
 		combinedFilter := strings.Join(mainFilterParts, combiner)
 		mainFilter = fmt.Sprintf("@filter(%s)", combinedFilter)
 	}
-	
 
 	limit := jsonQuery.Limit
 	offset := jsonQuery.Offset
@@ -96,32 +89,30 @@ func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery,
 		limit = 100
 	}
 	pagination := fmt.Sprintf("first: %d, offset: %d", limit, offset)
-	
 
 	mainQuery := models.MainQuery{
-		Name:       "chorki_customers",
+		Name:       "customers",
 		Type:       mainEntityType,
 		Function:   fmt.Sprintf("type(%s)", mainEntityType),
 		Filter:     mainFilter,
 		Fields:     c.buildFieldsSelection(mainEntityType),
 		Pagination: pagination,
 	}
-	
+
 	return &models.DQLQuery{
 		Variables: variables,
 		MainQuery: mainQuery,
 	}, nil
 }
 
-
 func (c *Converter) getForwardPredicate(entityType string) string {
 	switch entityType {
-	case "chorki_subscriptions":
-		return "chorki_customers.subscriptions"
-	case "chorki_devices":
-		return "chorki_customers.devices"
-	case "chorki_watch_histories":
-		return "chorki_customers.watch_histories"
+	case "subscriptions":
+		return "customers.subscriptions"
+	case "devices":
+		return "customers.devices"
+	case "watch_histories":
+		return "customers.watch_histories"
 	default:
 		return ""
 	}
@@ -130,47 +121,45 @@ func (c *Converter) getForwardPredicate(entityType string) string {
 func (c *Converter) categorizeFilters(jsonQuery *models.JSONQuery, mainEntityType string) ([]models.Group, map[string][]models.Group) {
 	mainEntityFilters := []models.Group{}
 	crossEntityFilters := make(map[string][]models.Group)
-	
+
 	for _, group := range jsonQuery.Groups {
 		mainGroup, crossGroups := c.categorizeGroup(group, mainEntityType)
-		
+
 		if mainGroup != nil {
 			mainEntityFilters = append(mainEntityFilters, *mainGroup)
 		}
-		
+
 		for entityType, groups := range crossGroups {
 			crossEntityFilters[entityType] = append(crossEntityFilters[entityType], groups...)
 		}
 	}
-	
+
 	return mainEntityFilters, crossEntityFilters
 }
 
 func (c *Converter) categorizeGroup(group models.Group, mainEntityType string) (*models.Group, map[string][]models.Group) {
 	mainFilters := []models.Filter{}
 	crossGroups := make(map[string][]models.Group)
-	
+
 	for _, filter := range group.Filters {
 		if mappings, exists := c.schema.FieldMappings[filter.Field]; exists {
-		
 			belongsToMain := false
 			var targetEntity string
-			
+
 			for _, mapping := range mappings {
 				if mapping.EntityType == mainEntityType {
 					belongsToMain = true
 					break
 				}
-				
+
 				if targetEntity == "" && mapping.EntityType != mainEntityType {
 					targetEntity = mapping.EntityType
 				}
 			}
-			
+
 			if belongsToMain {
 				mainFilters = append(mainFilters, filter)
 			} else if targetEntity != "" {
-				// Create cross-entity group
 				entityGroup := models.Group{
 					CombineWith: group.CombineWith,
 					Filters:     []models.Filter{filter},
@@ -179,8 +168,7 @@ func (c *Converter) categorizeGroup(group models.Group, mainEntityType string) (
 			}
 		}
 	}
-	
-	
+
 	var mainNestedGroups []models.Group
 	for _, nestedGroup := range group.Groups {
 		nestedMain, nestedCross := c.categorizeGroup(nestedGroup, mainEntityType)
@@ -191,8 +179,7 @@ func (c *Converter) categorizeGroup(group models.Group, mainEntityType string) (
 			crossGroups[entityType] = append(crossGroups[entityType], groups...)
 		}
 	}
-	
-	
+
 	var mainGroup *models.Group
 	if len(mainFilters) > 0 || len(mainNestedGroups) > 0 {
 		mainGroup = &models.Group{
@@ -201,46 +188,29 @@ func (c *Converter) categorizeGroup(group models.Group, mainEntityType string) (
 			Groups:      mainNestedGroups,
 		}
 	}
-	
+
 	return mainGroup, crossGroups
 }
 
 func (c *Converter) buildGroupFiltersForEntity(groups []models.Group, entityType string) string {
 	var conditions []string
-	
+
 	for _, group := range groups {
 		condition := c.buildGroupFilter(group, entityType)
 		if condition != "" {
 			conditions = append(conditions, condition)
 		}
 	}
-	
+
 	if len(conditions) == 0 {
 		return ""
 	}
-	
+
 	if len(conditions) == 1 {
 		return conditions[0]
 	}
-	
-	return "(" + strings.Join(conditions, " AND ") + ")"
-}
 
-func (c *Converter) getQueryName(entityType string) string {
-	switch entityType {
-	case "chorki_customers":
-		return "customers"
-	case "chorki_subscriptions":
-		return "subscriptions"
-	case "chorki_watch_histories":
-		return "watch_histories"
-	case "chorki_contents":
-		return "contents"
-	case "chorki_devices":
-		return "devices"
-	default:
-		return strings.ReplaceAll(entityType, "chorki_", "")
-	}
+	return "(" + strings.Join(conditions, " AND ") + ")"
 }
 
 func (c *Converter) buildFieldsSelection(entityType string) string {
@@ -283,32 +253,6 @@ func (c *Converter) buildGroupsFilter(groups []models.Group, combineWith, entity
 	return "(" + strings.Join(conditions, operator) + ")"
 }
 
-func (c *Converter) getRelationshipName(fromEntity, toEntity string) string {
-	switch {
-	case fromEntity == "chorki_customers" && toEntity == "chorki_subscriptions":
-		return "chorki_customers.subscriptions"
-	case fromEntity == "chorki_customers" && toEntity == "chorki_watch_histories":
-		return "chorki_customers.watch_histories"
-	case fromEntity == "chorki_customers" && toEntity == "chorki_devices":
-		return "chorki_customers.devices"
-	case fromEntity == "chorki_subscriptions" && toEntity == "chorki_customers":
-		return "~chorki_customers.subscriptions"
-	case fromEntity == "chorki_devices" && toEntity == "chorki_customers":
-		return "~chorki_customers.devices"
-	case fromEntity == "chorki_watch_histories" && toEntity == "chorki_customers":
-		return "~chorki_customers.watch_histories"
-	case fromEntity == "chorki_watch_histories" && toEntity == "chorki_contents":
-		return "chorki_watch_histories.content"
-	case fromEntity == "chorki_contents" && toEntity == "chorki_watch_histories":
-		return "~chorki_watch_histories.content"
-	default:
-		if toEntity == "chorki_customers" {
-			return "customers"
-		}
-		return strings.ReplaceAll(toEntity, "chorki_", "")
-	}
-}
-
 func (c *Converter) buildGroupFilter(group models.Group, entityType string) string {
 	var conditions []string
 
@@ -319,7 +263,7 @@ func (c *Converter) buildGroupFilter(group models.Group, entityType string) stri
 		}
 	}
 
-	if entityType == "chorki_subscriptions" {
+	if entityType == "subscriptions" {
 		conditions = c.optimizeSubscriptionFilters(conditions, group)
 	}
 
@@ -455,6 +399,7 @@ func (c *Converter) buildNotInCondition(mapping *models.FieldMapping, filter mod
 }
 
 func (c *Converter) buildComparisonCondition(mapping *models.FieldMapping, filter models.Filter, dqlFunction string) string {
+	// Handle version fields
 	if mode, isVersionField := c.versionFields[filter.Field]; isVersionField && mode == "numeric" {
 		return c.buildVersionComparisonCondition(mapping, filter, dqlFunction)
 	}
@@ -590,6 +535,13 @@ func (c *Converter) formatValue(value interface{}, dataType string) string {
 		}
 		return "false"
 
+	case "datetime":
+
+		if str, ok := value.(string); ok {
+			return fmt.Sprintf(`"%s"`, str)
+		}
+		return fmt.Sprintf(`"%v"`, value)
+
 	default:
 		return fmt.Sprintf(`"%v"`, value)
 	}
@@ -600,10 +552,10 @@ func (c *Converter) optimizeSubscriptionFilters(conditions []string, group model
 	var trialIndex int
 
 	for i, condition := range conditions {
-		if strings.Contains(condition, `eq(chorki_subscriptions.package, "Premium")`) {
+		if strings.Contains(condition, `eq(subscriptions.package, "Premium")`) {
 			hasPackagePremium = true
 		}
-		if strings.Contains(condition, `eq(chorki_subscriptions.status, "trial")`) {
+		if strings.Contains(condition, `eq(subscriptions.status, "trial")`) {
 			hasStatusTrial = true
 			trialIndex = i
 		}
@@ -612,7 +564,7 @@ func (c *Converter) optimizeSubscriptionFilters(conditions []string, group model
 	if hasPackagePremium && hasStatusTrial && strings.ToUpper(group.CombineWith) == "AND" {
 		optimizedConditions := make([]string, len(conditions))
 		copy(optimizedConditions, conditions)
-		optimizedConditions[trialIndex] = `(eq(chorki_subscriptions.status, "trial") OR eq(chorki_subscriptions.status, "active"))`
+		optimizedConditions[trialIndex] = `(eq(subscriptions.status, "trial") OR eq(subscriptions.status, "active"))`
 		return optimizedConditions
 	}
 
@@ -693,10 +645,8 @@ func (c *Converter) buildComplexObjectCondition(mapping *models.FieldMapping, ob
 
 func (c *Converter) GenerateDQLString(dqlQuery *models.DQLQuery) string {
 	var blocks []string
-	
 
 	for _, variable := range dqlQuery.Variables {
-	
 		var block string
 		if variable.Filter != "" {
 			block = fmt.Sprintf("  %s as var(func: type(%s)) %s {\n%s\n  }",
@@ -714,8 +664,7 @@ func (c *Converter) GenerateDQLString(dqlQuery *models.DQLQuery) string {
 		}
 		blocks = append(blocks, block)
 	}
-	
-	
+
 	mainBlock := fmt.Sprintf("  %s(func: %s, %s) %s {\n%s\n  }",
 		dqlQuery.MainQuery.Name,
 		dqlQuery.MainQuery.Function,
@@ -724,6 +673,6 @@ func (c *Converter) GenerateDQLString(dqlQuery *models.DQLQuery) string {
 		dqlQuery.MainQuery.Fields,
 	)
 	blocks = append(blocks, mainBlock)
-	
+
 	return "query {\n" + strings.Join(blocks, "\n") + "\n}"
 }

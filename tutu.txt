@@ -1,133 +1,133 @@
 
-type chorki_customers {
-  chorki_customers.id
-  chorki_customers.name
-  chorki_customers.email
-  chorki_customers.age
-  chorki_customers.country
-  chorki_customers.city
-  chorki_customers.device
-  chorki_customers.app_version
-  chorki_customers.last_login_days
-  chorki_customers.is_active
-  chorki_customers.created_at
-  chorki_customers.subscriptions
-  chorki_customers.devices
-  chorki_customers.watch_histories
+type customers {
+  customers.id
+  customers.name
+  customers.email
+  customers.age
+  customers.country
+  customers.city
+  customers.device
+  customers.app_version
+  customers.last_login_days
+  customers.is_active
+  customers.created_at
+  customers.subscriptions
+  customers.devices
+  customers.watch_histories
 }
 
 
-chorki_customers.id: string @index(exact) .
-chorki_customers.name: string @index(term) .
-chorki_customers.email: string @index(exact, hash) .
-chorki_customers.age: int @index(int) .
-chorki_customers.country: string @index(exact, hash) .
-chorki_customers.city: string @index(term) .
-chorki_customers.device: string @index(term) .
-chorki_customers.app_version: string @index(exact) .
-chorki_customers.last_login_days: int @index(int) .
-chorki_customers.is_active: bool @index(bool) .
-chorki_customers.created_at: datetime @index(day) .
+customers.id: string @index(exact) .
+customers.name: string @index(term) .
+customers.email: string @index(exact, hash) .
+customers.age: int @index(int) .
+customers.country: string @index(exact, hash) .
+customers.city: string @index(term) .
+customers.device: string @index(term) .
+customers.app_version: string @index(exact) .
+customers.last_login_days: int @index(int) .
+customers.is_active: bool @index(bool) .
+customers.created_at: datetime @index(day) .
 
 
-chorki_customers.subscriptions: [uid] @reverse .
-chorki_customers.devices: [uid] @reverse .
-chorki_customers.watch_histories: [uid] @reverse .
+customers.subscriptions: [uid] @reverse .
+customers.devices: [uid] @reverse .
+customers.watch_histories: [uid] @reverse .
 
 
-type chorki_subscriptions {
-  chorki_subscriptions.id
-  chorki_subscriptions.package
-  chorki_subscriptions.status
-  chorki_subscriptions.price
-  chorki_subscriptions.currency
-  chorki_subscriptions.payment_method
-  chorki_subscriptions.auto_renewal
-  chorki_subscriptions.trial_period
-  chorki_subscriptions.start_date
-  chorki_subscriptions.end_date
+type subscriptions {
+  subscriptions.id
+  subscriptions.package
+  subscriptions.status
+  subscriptions.price
+  subscriptions.currency
+  subscriptions.payment_method
+  subscriptions.auto_renewal
+  subscriptions.trial_period
+  subscriptions.start_date
+  subscriptions.end_date
 }
 
 
-chorki_subscriptions.id: string @index(exact) .
-chorki_subscriptions.package: string @index(exact, hash) .
-chorki_subscriptions.status: string @index(exact, hash) .
-chorki_subscriptions.price: float @index(float) .
-chorki_subscriptions.currency: string @index(exact) .
-chorki_subscriptions.payment_method: string @index(exact) .
-chorki_subscriptions.auto_renewal: bool @index(bool) .
-chorki_subscriptions.trial_period: bool @index(bool) .
-chorki_subscriptions.start_date: datetime @index(day) .
-chorki_subscriptions.end_date: datetime @index(day) .
+subscriptions.id: string @index(exact) .
+subscriptions.package: string @index(exact, hash) .
+subscriptions.status: string @index(exact, hash) .
+subscriptions.price: float @index(float) .
+subscriptions.currency: string @index(exact) .
+subscriptions.payment_method: string @index(exact) .
+subscriptions.auto_renewal: bool @index(bool) .
+subscriptions.trial_period: bool @index(bool) .
+subscriptions.start_date: datetime @index(day) .
+subscriptions.end_date: datetime @index(day) .
 
 
-type chorki_devices {
-  chorki_devices.id
-  chorki_devices.device_type
-  chorki_devices.device_model
-  chorki_devices.os_version
-  chorki_devices.app_version
-  chorki_devices.is_active
-  chorki_devices.last_used
+type devices {
+  devices.id
+  devices.device_type
+  devices.device_model
+  devices.os_version
+  devices.app_version
+  devices.is_active
+  devices.last_used
 }
 
 
-chorki_devices.id: string @index(exact) .
-chorki_devices.device_type: string @index(exact, hash) .
-chorki_devices.device_model: string @index(term) .
-chorki_devices.os_version: string @index(exact) .
-chorki_devices.app_version: string @index(exact) .
-chorki_devices.is_active: bool @index(bool) .
-chorki_devices.last_used: datetime @index(day) .
+devices.id: string @index(exact) .
+devices.device_type: string @index(exact, hash) .
+devices.device_model: string @index(term) .
+devices.os_version: string @index(exact) .
+devices.app_version: string @index(exact) .
+devices.is_active: bool @index(bool) .
+devices.last_used: datetime @index(day) .
 
 
-type chorki_watch_histories {
-  chorki_watch_histories.id
-  chorki_watch_histories.content_id
-  chorki_watch_histories.content_title
-  chorki_watch_histories.type
-  chorki_watch_histories.genre
-  chorki_watch_histories.watch_date
-  chorki_watch_histories.watch_duration
-  chorki_watch_histories.completion_rate
-  chorki_watch_histories.content
+type watch_histories {
+  watch_histories.id
+  watch_histories.content_id
+  watch_histories.content_title
+  watch_histories.type
+  watch_histories.genre
+  watch_histories.watch_date
+  watch_histories.watch_duration
+  watch_histories.completion_rate
+  watch_histories.content
 }
 
 
-chorki_watch_histories.id: string @index(exact) .
-chorki_watch_histories.content_id: string @index(exact, hash) .
-chorki_watch_histories.content_title: string @index(term, fulltext) .
-chorki_watch_histories.type: string @index(exact, hash) .
-chorki_watch_histories.genre: [string] @index(exact) .
-chorki_watch_histories.watch_date: datetime @index(day) .
-chorki_watch_histories.watch_duration: int @index(int) .
-chorki_watch_histories.completion_rate: float @index(float) .
+watch_histories.id: string @index(exact) .
+watch_histories.content_id: string @index(exact, hash) .
+watch_histories.content_title: string @index(term, fulltext) .
+watch_histories.type: string @index(exact, hash) .
+watch_histories.genre: [string] @index(exact) .
+watch_histories.watch_date: datetime @index(day) .
+watch_histories.watch_duration: int @index(int) .
+watch_histories.completion_rate: float @index(float) .
 
 
-chorki_watch_histories.content: uid @reverse .
+watch_histories.content: uid @reverse .
 
 
-type chorki_contents {
-  chorki_contents.id
-  chorki_contents.title
-  chorki_contents.type
-  chorki_contents.genre
-  chorki_contents.duration
-  chorki_contents.rating
-  chorki_contents.release_date
-  chorki_contents.language
-  chorki_contents.director
-  chorki_contents.cast
+type contents {
+  contents.id
+  contents.title
+  contents.type
+  contents.genre
+  contents.duration
+  contents.rating
+  contents.release_date
+  contents.language
+  contents.director
+  contents.cast
 }
 
 
-chorki_contents.id: string @index(exact) .
-chorki_contents.title: string @index(term, fulltext) .
-chorki_contents.type: string @index(exact, hash) .
-chorki_contents.genre: [string] @index(exact) .
-chorki_contents.duration: int @index(int) .
-chorki_contents.rating: float @index(float) .
-chorki_contents.release_date: datetime @index(day) .
-chorki_contents.language: string @index(exact) .
-chorki_contents.director: string @index(term) .
-chorki_contents.cast: [string] @index(term) .
+contents.id: string @index(exact) .
+contents.title: string @index(term, fulltext) .
+contents.type: string @index(exact, hash) .
+contents.genre: [string] @index(exact) .
+contents.duration: int @index(int) .
+contents.rating: float @index(float) .
+contents.release_date: datetime @index(day) .
+contents.language: string @index(exact) .
+contents.director: string @index(term) .
+contents.cast: [string] @index(term) .

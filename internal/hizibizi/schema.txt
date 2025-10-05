@@ -1,0 +1,133 @@
+
+type customers {
+  customers.id
+  customers.name
+  customers.email
+  customers.age
+  customers.country
+  customers.city
+  customers.device
+  customers.app_version
+  customers.last_login_days
+  customers.is_active
+  customers.created_at
+  customers.subscriptions
+  customers.devices
+  customers.watch_histories
+}
+
+
+customers.id: string @index(exact) .
+customers.name: string @index(term) .
+customers.email: string @index(exact, hash) .
+customers.age: int @index(int) .
+customers.country: string @index(exact, hash) .
+customers.city: string @index(term) .
+customers.device: string @index(term) .
+customers.app_version: string @index(exact) .
+customers.last_login_days: int @index(int) .
+customers.is_active: bool @index(bool) .
+customers.created_at: datetime @index(day) .
+
+
+customers.subscriptions: [uid] @reverse .
+customers.devices: [uid] @reverse .
+customers.watch_histories: [uid] @reverse .
+
+
+type subscriptions {
+  subscriptions.id
+  subscriptions.package
+  subscriptions.status
+  subscriptions.price
+  subscriptions.currency
+  subscriptions.payment_method
+  subscriptions.auto_renewal
+  subscriptions.trial_period
+  subscriptions.start_date
+  subscriptions.end_date
+}
+
+
+subscriptions.id: string @index(exact) .
+subscriptions.package: string @index(exact, hash) .
+subscriptions.status: string @index(exact, hash) .
+subscriptions.price: float @index(float) .
+subscriptions.currency: string @index(exact) .
+subscriptions.payment_method: string @index(exact) .
+subscriptions.auto_renewal: bool @index(bool) .
+subscriptions.trial_period: bool @index(bool) .
+subscriptions.start_date: datetime @index(day) .
+subscriptions.end_date: datetime @index(day) .
+
+
+type devices {
+  devices.id
+  devices.device_type
+  devices.device_model
+  devices.os_version
+  devices.app_version
+  devices.is_active
+  devices.last_used
+}
+
+
+devices.id: string @index(exact) .
+devices.device_type: string @index(exact, hash) .
+devices.device_model: string @index(term) .
+devices.os_version: string @index(exact) .
+devices.app_version: string @index(exact) .
+devices.is_active: bool @index(bool) .
+devices.last_used: datetime @index(day) .
+
+
+type watch_histories {
+  watch_histories.id
+  watch_histories.content_id
+  watch_histories.content_title
+  watch_histories.type
+  watch_histories.genre
+  watch_histories.watch_date
+  watch_histories.watch_duration
+  watch_histories.completion_rate
+  watch_histories.content
+}
+
+
+watch_histories.id: string @index(exact) .
+watch_histories.content_id: string @index(exact, hash) .
+watch_histories.content_title: string @index(term, fulltext) .
+watch_histories.type: string @index(exact, hash) .
+watch_histories.genre: [string] @index(exact) .
+watch_histories.watch_date: datetime @index(day) .
+watch_histories.watch_duration: int @index(int) .
+watch_histories.completion_rate: float @index(float) .
+
+
+watch_histories.content: uid @reverse .
+
+
+type contents {
+  contents.id
+  contents.title
+  contents.type
+  contents.genre
+  contents.duration
+  contents.rating
+  contents.release_date
+  contents.language
+  contents.director
+  contents.cast
+}
+
+
+contents.id: string @index(exact) .
+contents.title: string @index(term, fulltext) .
+contents.type: string @index(exact, hash) .
+contents.genre: [string] @index(exact) .
+contents.duration: int @index(int) .
+contents.rating: float @index(float) .
+contents.release_date: datetime @index(day) .
+contents.language: string @index(exact) .
+contents.director: string @index(term) .
+contents.cast: [string] @index(term) .
