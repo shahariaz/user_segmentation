@@ -30,57 +30,35 @@ func NewConverter() *Converter {
 func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery, error) {
 	const mainEntityType = "customers"
 
-	mainEntityFilters, crossEntityFilters := c.categorizeFilters(jsonQuery, mainEntityType)
-
 	var variables []models.VariableBlock
-	var uidReferences []string
 	varCounter := 0
 
-	for entityType, filters := range crossEntityFilters {
-		if len(filters) > 0 {
-			varName := fmt.Sprintf("var%d", varCounter)
-			varCounter++
+	var groupExpressions []string
 
-			filterCondition := c.buildGroupFiltersForEntity(filters, entityType)
+	for _, group := range jsonQuery.Groups {
+		groupExpr, vars, counter := c.processGroup(group, mainEntityType, varCounter)
+		if groupExpr != "" {
 
-			forwardPredicate := c.getForwardPredicate(entityType)
-			if forwardPredicate == "" {
-				continue
-			}
+			groupExpressions = append(groupExpressions, groupExpr)
+			variables = append(variables, vars...)
+			varCounter = counter
 
-			variable := models.VariableBlock{
-				Name:   varName,
-				Type:   mainEntityType,
-				Filter: "",
-				Fields: fmt.Sprintf("    %s @filter(%s)", forwardPredicate, filterCondition),
-			}
-
-			variables = append(variables, variable)
-			uidReferences = append(uidReferences, fmt.Sprintf("uid(%s)", varName))
-		}
-	}
-
-	var mainFilterParts []string
-
-	if len(uidReferences) > 0 {
-		mainFilterParts = append(mainFilterParts, strings.Join(uidReferences, " AND "))
-	}
-
-	if len(mainEntityFilters) > 0 {
-		mainCondition := c.buildGroupFiltersForEntity(mainEntityFilters, mainEntityType)
-		if mainCondition != "" {
-			mainFilterParts = append(mainFilterParts, mainCondition)
 		}
 	}
 
 	var mainFilter string
-	if len(mainFilterParts) > 0 {
+	if len(groupExpressions) > 0 {
 		combiner := " AND "
 		if strings.ToUpper(jsonQuery.CombineWith) == "OR" {
 			combiner = " OR "
 		}
-		combinedFilter := strings.Join(mainFilterParts, combiner)
-		mainFilter = fmt.Sprintf("@filter(%s)", combinedFilter)
+
+		if len(groupExpressions) == 1 {
+			mainFilter = fmt.Sprintf("@filter(%s)", groupExpressions[0])
+		} else {
+			combinedFilter := strings.Join(groupExpressions, combiner)
+			mainFilter = fmt.Sprintf("@filter(%s)", combinedFilter)
+		}
 	}
 
 	limit := jsonQuery.Limit
@@ -105,6 +83,109 @@ func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery,
 	}, nil
 }
 
+// processGroup processes a single group and returns the filter expression, variables, and updated counter
+func (c *Converter) processGroup(group models.Group, mainEntityType string, varCounter int) (string, []models.VariableBlock, int) {
+	var variables []models.VariableBlock
+	var filterExpressions []string
+
+	isOrGroup := strings.ToUpper(group.CombineWith) == "OR"
+
+	for _, filter := range group.Filters {
+		expr, vars, counter := c.processFilter(filter, mainEntityType, varCounter)
+		if expr != "" {
+			filterExpressions = append(filterExpressions, expr)
+			variables = append(variables, vars...)
+			varCounter = counter
+		}
+	}
+
+	for _, nestedGroup := range group.Groups {
+		expr, vars, counter := c.processGroup(nestedGroup, mainEntityType, varCounter)
+		if expr != "" {
+			filterExpressions = append(filterExpressions, expr)
+			variables = append(variables, vars...)
+			varCounter = counter
+		}
+	}
+
+	if len(filterExpressions) == 0 {
+		return "", variables, varCounter
+	}
+
+	// Combine expressions based on group's combine_with
+	combiner := " AND "
+	if isOrGroup {
+		combiner = " OR "
+	}
+
+	var groupExpression string
+	if len(filterExpressions) == 1 {
+		groupExpression = filterExpressions[0]
+	} else {
+		groupExpression = "(" + strings.Join(filterExpressions, combiner) + ")"
+	}
+
+	return groupExpression, variables, varCounter
+}
+
+func (c *Converter) processFilter(filter models.Filter, mainEntityType string, varCounter int) (string, []models.VariableBlock, int) {
+	var variables []models.VariableBlock
+
+	mappings, exists := c.schema.FieldMappings[filter.Field]
+	if !exists {
+		return "", variables, varCounter
+	}
+
+	var mainEntityMapping *models.FieldMapping
+	var crossEntityMapping *models.FieldMapping
+
+	for _, mapping := range mappings {
+		if mapping.EntityType == mainEntityType {
+			mainEntityMapping = &mapping
+			break
+		}
+	}
+
+	if mainEntityMapping == nil && len(mappings) > 0 {
+		crossEntityMapping = &mappings[0]
+	}
+
+	if mainEntityMapping != nil {
+		condition := c.buildDQLCondition(mainEntityMapping, filter)
+		if condition != "" {
+			return condition, variables, varCounter
+		}
+	}
+
+	// Handle cross-entity filters
+	if crossEntityMapping != nil {
+		varName := fmt.Sprintf("var%d", varCounter)
+		varCounter++
+
+		filterCondition := c.buildDQLCondition(crossEntityMapping, filter)
+		if filterCondition == "" {
+			return "", variables, varCounter
+		}
+
+		forwardPredicate := c.getForwardPredicate(crossEntityMapping.EntityType)
+		if forwardPredicate == "" {
+			return "", variables, varCounter
+		}
+
+		variable := models.VariableBlock{
+			Name:   varName,
+			Type:   mainEntityType,
+			Filter: "",
+			Fields: fmt.Sprintf("    %s @filter(%s)", forwardPredicate, filterCondition),
+		}
+
+		variables = append(variables, variable)
+		return fmt.Sprintf("uid(%s)", varName), variables, varCounter
+	}
+
+	return "", variables, varCounter
+}
+
 func (c *Converter) getForwardPredicate(entityType string) string {
 	switch entityType {
 	case "subscriptions":
@@ -120,101 +201,6 @@ func (c *Converter) getForwardPredicate(entityType string) string {
 	}
 }
 
-func (c *Converter) categorizeFilters(jsonQuery *models.JSONQuery, mainEntityType string) ([]models.Group, map[string][]models.Group) {
-	mainEntityFilters := []models.Group{}
-	crossEntityFilters := make(map[string][]models.Group)
-
-	for _, group := range jsonQuery.Groups {
-		mainGroup, crossGroups := c.categorizeGroup(group, mainEntityType)
-
-		if mainGroup != nil {
-			mainEntityFilters = append(mainEntityFilters, *mainGroup)
-		}
-
-		for entityType, groups := range crossGroups {
-			crossEntityFilters[entityType] = append(crossEntityFilters[entityType], groups...)
-		}
-	}
-
-	return mainEntityFilters, crossEntityFilters
-}
-
-func (c *Converter) categorizeGroup(group models.Group, mainEntityType string) (*models.Group, map[string][]models.Group) {
-	mainFilters := []models.Filter{}
-	crossGroups := make(map[string][]models.Group)
-
-	for _, filter := range group.Filters {
-		if mappings, exists := c.schema.FieldMappings[filter.Field]; exists {
-			belongsToMain := false
-			var targetEntity string
-
-			for _, mapping := range mappings {
-				if mapping.EntityType == mainEntityType {
-					belongsToMain = true
-					break
-				}
-
-				if targetEntity == "" && mapping.EntityType != mainEntityType {
-					targetEntity = mapping.EntityType
-				}
-			}
-
-			if belongsToMain {
-				mainFilters = append(mainFilters, filter)
-			} else if targetEntity != "" {
-				entityGroup := models.Group{
-					CombineWith: group.CombineWith,
-					Filters:     []models.Filter{filter},
-				}
-				crossGroups[targetEntity] = append(crossGroups[targetEntity], entityGroup)
-			}
-		}
-	}
-
-	var mainNestedGroups []models.Group
-	for _, nestedGroup := range group.Groups {
-		nestedMain, nestedCross := c.categorizeGroup(nestedGroup, mainEntityType)
-		if nestedMain != nil {
-			mainNestedGroups = append(mainNestedGroups, *nestedMain)
-		}
-		for entityType, groups := range nestedCross {
-			crossGroups[entityType] = append(crossGroups[entityType], groups...)
-		}
-	}
-
-	var mainGroup *models.Group
-	if len(mainFilters) > 0 || len(mainNestedGroups) > 0 {
-		mainGroup = &models.Group{
-			CombineWith: group.CombineWith,
-			Filters:     mainFilters,
-			Groups:      mainNestedGroups,
-		}
-	}
-
-	return mainGroup, crossGroups
-}
-
-func (c *Converter) buildGroupFiltersForEntity(groups []models.Group, entityType string) string {
-	var conditions []string
-
-	for _, group := range groups {
-		condition := c.buildGroupFilter(group, entityType)
-		if condition != "" {
-			conditions = append(conditions, condition)
-		}
-	}
-
-	if len(conditions) == 0 {
-		return ""
-	}
-
-	if len(conditions) == 1 {
-		return conditions[0]
-	}
-
-	return "(" + strings.Join(conditions, " AND ") + ")"
-}
-
 func (c *Converter) buildFieldsSelection(entityType string) string {
 	fields := c.schema.DefaultFields[entityType]
 	if len(fields) == 0 {
@@ -227,90 +213,6 @@ func (c *Converter) buildFieldsSelection(entityType string) string {
 	}
 
 	return strings.Join(fieldLines, "\n")
-}
-
-func (c *Converter) buildGroupsFilter(groups []models.Group, combineWith, entityType string) string {
-	var conditions []string
-
-	for _, group := range groups {
-		condition := c.buildGroupFilter(group, entityType)
-		if condition != "" {
-			conditions = append(conditions, condition)
-		}
-	}
-
-	if len(conditions) == 0 {
-		return ""
-	}
-
-	if len(conditions) == 1 {
-		return conditions[0]
-	}
-
-	operator := " AND "
-	if strings.ToUpper(combineWith) == "OR" {
-		operator = " OR "
-	}
-
-	return "(" + strings.Join(conditions, operator) + ")"
-}
-
-func (c *Converter) buildGroupFilter(group models.Group, entityType string) string {
-	var conditions []string
-
-	for _, filter := range group.Filters {
-		condition := c.buildFilterCondition(filter, entityType)
-		if condition != "" {
-			conditions = append(conditions, condition)
-		}
-	}
-
-	if entityType == "subscriptions" {
-		conditions = c.optimizeSubscriptionFilters(conditions, group)
-	}
-
-	if len(group.Groups) > 0 {
-		nestedCondition := c.buildGroupsFilter(group.Groups, group.CombineWith, entityType)
-		if nestedCondition != "" {
-			conditions = append(conditions, nestedCondition)
-		}
-	}
-
-	if len(conditions) == 0 {
-		return ""
-	}
-
-	if len(conditions) == 1 {
-		return conditions[0]
-	}
-
-	operator := " AND "
-	if strings.ToUpper(group.CombineWith) == "OR" {
-		operator = " OR "
-	}
-
-	return "(" + strings.Join(conditions, operator) + ")"
-}
-
-func (c *Converter) buildFilterCondition(filter models.Filter, entityType string) string {
-	mappings, exists := c.schema.FieldMappings[filter.Field]
-	if !exists {
-		return ""
-	}
-
-	var relevantMapping *models.FieldMapping
-	for _, mapping := range mappings {
-		if mapping.EntityType == entityType {
-			relevantMapping = &mapping
-			break
-		}
-	}
-
-	if relevantMapping == nil {
-		return ""
-	}
-
-	return c.buildDQLCondition(relevantMapping, filter)
 }
 
 func (c *Converter) buildDQLCondition(mapping *models.FieldMapping, filter models.Filter) string {
@@ -333,9 +235,9 @@ func (c *Converter) buildDQLCondition(mapping *models.FieldMapping, filter model
 	case "BETWEEN":
 		return c.buildBetweenCondition(mapping, filter)
 	case "IS_NULL":
-		return c.buildNullCondition(mapping, filter, true)
+		return c.buildNullCondition(mapping, true)
 	case "IS_NOT_NULL":
-		return c.buildNullCondition(mapping, filter, false)
+		return c.buildNullCondition(mapping, false)
 	case "STARTS_WITH":
 		return c.buildStringPatternCondition(mapping, filter, "starts_with")
 	case "ENDS_WITH":
@@ -401,7 +303,7 @@ func (c *Converter) buildNotInCondition(mapping *models.FieldMapping, filter mod
 }
 
 func (c *Converter) buildComparisonCondition(mapping *models.FieldMapping, filter models.Filter, dqlFunction string) string {
-	// Handle version fields
+
 	if mode, isVersionField := c.versionFields[filter.Field]; isVersionField && mode == "numeric" {
 		return c.buildVersionComparisonCondition(mapping, filter, dqlFunction)
 	}
@@ -468,7 +370,7 @@ func (c *Converter) buildBetweenCondition(mapping *models.FieldMapping, filter m
 	return ""
 }
 
-func (c *Converter) buildNullCondition(mapping *models.FieldMapping, filter models.Filter, isNull bool) string {
+func (c *Converter) buildNullCondition(mapping *models.FieldMapping, isNull bool) string {
 	if isNull {
 		return fmt.Sprintf("NOT has(%s)", mapping.DgraphField)
 	}
@@ -547,30 +449,6 @@ func (c *Converter) formatValue(value interface{}, dataType string) string {
 	default:
 		return fmt.Sprintf(`"%v"`, value)
 	}
-}
-
-func (c *Converter) optimizeSubscriptionFilters(conditions []string, group models.Group) []string {
-	var hasPackagePremium, hasStatusTrial bool
-	var trialIndex int
-
-	for i, condition := range conditions {
-		if strings.Contains(condition, `eq(subscriptions.package, "Premium")`) {
-			hasPackagePremium = true
-		}
-		if strings.Contains(condition, `eq(subscriptions.status, "trial")`) {
-			hasStatusTrial = true
-			trialIndex = i
-		}
-	}
-
-	if hasPackagePremium && hasStatusTrial && strings.ToUpper(group.CombineWith) == "AND" {
-		optimizedConditions := make([]string, len(conditions))
-		copy(optimizedConditions, conditions)
-		optimizedConditions[trialIndex] = `(eq(subscriptions.status, "trial") OR eq(subscriptions.status, "active"))`
-		return optimizedConditions
-	}
-
-	return conditions
 }
 
 func (c *Converter) buildVersionComparisonCondition(mapping *models.FieldMapping, filter models.Filter, dqlFunction string) string {

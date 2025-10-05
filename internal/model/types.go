@@ -2,44 +2,44 @@ package models
 
 // JSONQuery represents the root structure of the incoming JSON query
 type JSONQuery struct {
-	CombineWith string  `json:"combine_with" binding:"required"` // "AND" or "OR"
+	CombineWith string  `json:"combine_with" binding:"required"`
 	Groups      []Group `json:"groups" binding:"required"`
-	Limit       int     `json:"limit,omitempty"`  // Pagination limit
-	Offset      int     `json:"offset,omitempty"` // Pagination offset
+	Limit       int     `json:"limit,omitempty"`
+	Offset      int     `json:"offset,omitempty"`
 }
 
 type Group struct {
-	CombineWith string   `json:"combine_with" binding:"required"` // "AND" or "OR"
+	CombineWith string   `json:"combine_with" binding:"required"`
 	Filters     []Filter `json:"filters,omitempty"`
-	Groups      []Group  `json:"groups,omitempty"` // Nested groups for complex queries
+	Groups      []Group  `json:"groups,omitempty"`
 }
 
 // Filter represents a single filter condition
 type Filter struct {
 	Field string      `json:"field" binding:"required"`
-	Op    string      `json:"op" binding:"required"`    // "=", ">=", "<=", ">", "<", "IN"
-	Value interface{} `json:"value" binding:"required"` // Can be string, int, float, array, or complex object
+	Op    string      `json:"op" binding:"required"`
+	Value interface{} `json:"value" binding:"required"`
 }
 
 type DQLQuery struct {
-	Variables []VariableBlock `json:"variables,omitempty"` // Variable blocks for cross-entity filters
-	MainQuery MainQuery       `json:"main_query"`          // Main query block
+	Variables []VariableBlock `json:"variables,omitempty"`
+	MainQuery MainQuery       `json:"main_query"`
 }
 
 type VariableBlock struct {
-	Name   string `json:"name"`   // var0, var1, etc.
-	Type   string `json:"type"`   // Entity type
-	Filter string `json:"filter"` // Filter condition
-	Fields string `json:"fields"` // Fields to traverse (usually reverse predicates)
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Filter string `json:"filter"`
+	Fields string `json:"fields"`
 }
 
 type MainQuery struct {
-	Name       string `json:"name"`       // Query name (e.g., "customers")
-	Type       string `json:"type"`       // Entity type
-	Function   string `json:"function"`   // func: type(entity)
-	Filter     string `json:"filter"`     // Main filter with uid references
-	Fields     string `json:"fields"`     // Fields to select
-	Pagination string `json:"pagination"` // Pagination clause
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Function   string `json:"function"`
+	Filter     string `json:"filter"`
+	Fields     string `json:"fields"`
+	Pagination string `json:"pagination"`
 }
 
 type EntityQuery struct {
