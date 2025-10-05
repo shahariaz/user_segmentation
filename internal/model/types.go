@@ -1,4 +1,4 @@
-apackage models
+package models
 
 // JSONQuery represents the root structure of the incoming JSON query
 type JSONQuery struct {

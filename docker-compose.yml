@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  # Dgraph Zero
+  zero:
+    image: dgraph/dgraph:latest
+    volumes:
+      - dgraph_data:/dgraph
+      - ./dgraph:/dgraph-init
+    ports:
+      - 5080:5080
+      - 6080:6080
+    restart: on-failure
+    command: dgraph zero --my=zero:5080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Dgraph Alpha
+  alpha:
+    image: dgraph/dgraph:latest
+    volumes:
+      - dgraph_data:/dgraph
+      - ./dgraph:/dgraph-init
+    ports:
+      - 8080:8080
+      - 9080:9080
+    restart: on-failure
+    command: >
+      dgraph alpha
+      --my=alpha:7080
+      --zero=zero:5080
+      --security whitelist=0.0.0.0/0
+    depends_on:
+      zero:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  # Dgraph Ratel (UI)
+  ratel:
+    image: dgraph/ratel:latest
+    ports:
+      - 8000:8000
+    command: dgraph-ratel
+    depends_on:
+      - alpha
+
+  # Schema and Data Initializer
+  dgraph-init:
+    image: dgraph/dgraph:latest
+    depends_on:
+      alpha:
+        condition: service_healthy
+    volumes:
+      - ./dgraph:/dgraph-init
+    command: >
+      sh -c "
+        echo 'Waiting for Dgraph Alpha to be ready...' &&
+        sleep 5 &&
+        echo 'Setting up schema...' &&
+        curl -X POST alpha:8080/admin/schema --data-binary @/dgraph-init/schema.graphql &&
+        echo 'Schema applied successfully!' &&
+        echo 'Loading large dataset...' &&
+        curl -X POST alpha:8080/mutate?commitNow=true -H 'Content-Type: application/rdf' --data-binary @/dgraph-init/large_sample_data.rdf &&
+        echo 'Large dataset loaded successfully!' &&
+        echo 'Dgraph setup complete with 77K+ records!'
+      "
+    restart: "no"
+
+volumes:
+  dgraph_data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
