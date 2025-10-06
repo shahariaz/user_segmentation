@@ -1,46 +1,36 @@
 {
-  "combine_with": "AND",
+  "operation": "AND",
   "groups": [
     {
-      "combine_with": "OR",
+      "operation": "OR",
       "filters": [
         {
           "field": "age",
           "op": ">",
-          "value": 25
+          "value": 30
         },
         {
           "field": "watched_content",
           "op": "IN",
           "value": {
             "content_type": "Movie",
-            "ids": ["CONT001", "CONT002"]
+            "ids": ["CONT001"]
           }
         }
       ]
     },
     {
-      "combine_with": "OR",
+      "operation": "OR",
       "filters": [
         {
           "field": "purchasable_id",
-          "op": "=",
-          "value": "PREMIUM_CONTENT_001"
+          "op": "IN",
+          "value": ["PREMIUM_CONTENT_001", "MOVIE_RENT_001", "SERIES_SEASON_001"]
         },
         {
           "field": "purchase_status",
-          "op": "IN",
-          "value": ["completed", "active"]
-        }
-      ]
-    },
-    {
-      "combine_with": "AND",
-      "filters": [
-        {
-          "field": "is_active",
           "op": "=",
-          "value": true
+          "value": "completed"
         }
       ]
     }

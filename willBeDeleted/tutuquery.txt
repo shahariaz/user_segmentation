@@ -4,10 +4,10 @@
       "name": "Query 1 - Simple: Active customers only",
       "description": "Find all active customers",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "is_active",
@@ -25,10 +25,10 @@
       "name": "Query 2 - Simple: iOS users",
       "description": "Find customers using iOS devices",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "device",
@@ -46,10 +46,10 @@
       "name": "Query 3 - Medium: Active subscribers with specific device",
       "description": "Find active customers with Premium subscription using iOS or Android",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "device",
@@ -77,10 +77,10 @@
       "name": "Query 4 - Medium: Recent active users by location",
       "description": "Find customers who logged in within 7 days from USA or Canada",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "last_login_days",
@@ -108,10 +108,10 @@
       "name": "Query 5 - Medium: Age and subscription filters",
       "description": "Find customers aged 25-40 with active Premium subscription",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "age",
@@ -139,10 +139,10 @@
       "name": "Query 6 - Hard: Multiple device types OR subscription status",
       "description": "Find users with (iOS OR Android OR Web) AND (active OR trial subscription)",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "filters": [
               {
                 "field": "device",
@@ -162,7 +162,7 @@
             ]
           },
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "filters": [
               {
                 "field": "subscription_status",
@@ -185,13 +185,13 @@
       "name": "Query 7 - Hard: Nested groups with demographics",
       "description": "Complex query: (Age 18-35 from USA) OR (Age 36-50 from UK) with active subscription",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "groups": [
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "age",
@@ -206,7 +206,7 @@
                 ]
               },
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "age",
@@ -223,7 +223,7 @@
             ]
           },
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "subscription_status",
@@ -241,10 +241,10 @@
       "name": "Query 8 - Very Hard: Multiple nested conditions",
       "description": "Find engaged users: Recent login AND (Premium subscriber OR trial) AND (iOS OR Android) AND age 20-45",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "last_login_days",
@@ -264,10 +264,10 @@
             ]
           },
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "groups": [
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "subscribed_package",
@@ -282,7 +282,7 @@
                 ]
               },
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "subscribed_package",
@@ -299,7 +299,7 @@
             ]
           },
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "filters": [
               {
                 "field": "device",
@@ -322,10 +322,10 @@
       "name": "Query 9 - Very Hard: Multi-level nested with exclusions",
       "description": "Complex segmentation: Active users from specific countries, with Premium/trial, excluding Web users, recent activity",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "is_active",
@@ -340,10 +340,10 @@
             ]
           },
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "groups": [
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "country",
@@ -358,7 +358,7 @@
                 ]
               },
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "country",
@@ -375,7 +375,7 @@
             ]
           },
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "filters": [
               {
                 "field": "subscribed_package",
@@ -385,7 +385,7 @@
             ],
             "groups": [
               {
-                "combine_with": "OR",
+                "operation": "OR",
                 "filters": [
                   {
                     "field": "subscription_status",
@@ -402,7 +402,7 @@
             ]
           },
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "device",
@@ -420,13 +420,13 @@
       "name": "Query 10 - Expert: Most complex segmentation",
       "description": "Ultimate segmentation: Multi-dimensional targeting with all entity types and deep nesting",
       "query": {
-        "combine_with": "AND",
+        "operation": "AND",
         "groups": [
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "groups": [
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "country",
@@ -446,7 +446,7 @@
                 ],
                 "groups": [
                   {
-                    "combine_with": "OR",
+                    "operation": "OR",
                     "filters": [
                       {
                         "field": "city",
@@ -458,7 +458,7 @@
                 ]
               },
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "country",
@@ -480,10 +480,10 @@
             ]
           },
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "groups": [
               {
-                "combine_with": "OR",
+                "operation": "OR",
                 "filters": [
                   {
                     "field": "device",
@@ -498,7 +498,7 @@
                 ]
               },
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "app_version",
@@ -510,10 +510,10 @@
             ]
           },
           {
-            "combine_with": "OR",
+            "operation": "OR",
             "groups": [
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "subscribed_package",
@@ -533,7 +533,7 @@
                 ]
               },
               {
-                "combine_with": "AND",
+                "operation": "AND",
                 "filters": [
                   {
                     "field": "subscribed_package",
@@ -550,7 +550,7 @@
             ]
           },
           {
-            "combine_with": "AND",
+            "operation": "AND",
             "filters": [
               {
                 "field": "is_active",

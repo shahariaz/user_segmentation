@@ -1,8 +1,8 @@
 {
-  "combine_with": "AND",
+  "operation": "AND",
   "groups": [
     {
-      "combine_with": "OR",
+      "operation": "OR",
       "filters": [
         {
           "field": "purchase_status",
@@ -17,7 +17,7 @@
       ]
     },
     {
-      "combine_with": "AND",
+      "operation": "AND",
       "filters": [
         {
           "field": "is_active",

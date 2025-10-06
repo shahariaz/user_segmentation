@@ -1,8 +1,8 @@
 {
-  "combine_with": "AND",
+  "operation": "AND",
   "groups": [
     {
-      "combine_with": "AND",
+      "operation": "AND",
       "filters": [
         {
           "field": "country",
@@ -17,7 +17,7 @@
       ]
     },
     {
-      "combine_with": "OR",
+      "operation": "OR",
       "filters": [
         {
           "field": "subscription_status",
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "combine_with": "AND",
+      "operation": "AND",
       "filters": [
         {
           "field": "device",

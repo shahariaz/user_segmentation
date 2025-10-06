@@ -1,10 +1,10 @@
 curl -X POST http://localhost:8010/api/v1/execute \
   -H "Content-Type: application/json" \
   -d '{
-    "combine_with": "AND",
+    "operation": "AND",
     "groups": [
       {
-        "combine_with": "AND",
+        "operation": "AND",
         "filters": [
           {"field": "device", "op": "IN", "value": ["iOS", "Android"]},
           {"field": "subscribed_package", "op": "=", "value": "Premium"},

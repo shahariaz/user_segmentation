@@ -2,16 +2,16 @@ package models
 
 // JSONQuery represents the root structure of the incoming JSON query
 type JSONQuery struct {
-	CombineWith string  `json:"combine_with" binding:"required"`
-	Groups      []Group `json:"groups" binding:"required"`
-	Limit       int     `json:"limit,omitempty"`
-	Offset      int     `json:"offset,omitempty"`
+	Operation string  `json:"operation" binding:"required"`
+	Groups    []Group `json:"groups" binding:"required"`
+	Limit     int     `json:"limit,omitempty"`
+	Offset    int     `json:"offset,omitempty"`
 }
 
 type Group struct {
-	CombineWith string   `json:"combine_with" binding:"required"`
-	Filters     []Filter `json:"filters,omitempty"`
-	Groups      []Group  `json:"groups,omitempty"`
+	Operation string   `json:"operation" binding:"required"`
+	Filters   []Filter `json:"filters,omitempty"`
+	Groups    []Group  `json:"groups,omitempty"`
 }
 
 // Filter represents a single filter condition

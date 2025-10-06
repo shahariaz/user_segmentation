@@ -44,12 +44,13 @@ func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery,
 			varCounter = counter
 
 		}
+
 	}
 
 	var mainFilter string
 	if len(groupExpressions) > 0 {
 		combiner := " AND "
-		if strings.ToUpper(jsonQuery.CombineWith) == "OR" {
+		if strings.ToUpper(jsonQuery.Operation) == "OR" {
 			combiner = " OR "
 		}
 
@@ -57,6 +58,7 @@ func (c *Converter) ConvertToDQL(jsonQuery *models.JSONQuery) (*models.DQLQuery,
 			mainFilter = fmt.Sprintf("@filter(%s)", groupExpressions[0])
 		} else {
 			combinedFilter := strings.Join(groupExpressions, combiner)
+
 			mainFilter = fmt.Sprintf("@filter(%s)", combinedFilter)
 		}
 	}
@@ -88,10 +90,11 @@ func (c *Converter) processGroup(group models.Group, mainEntityType string, varC
 	var variables []models.VariableBlock
 	var filterExpressions []string
 
-	isOrGroup := strings.ToUpper(group.CombineWith) == "OR"
+	isOrGroup := strings.ToUpper(group.Operation) == "OR"
 
 	for _, filter := range group.Filters {
 		expr, vars, counter := c.processFilter(filter, mainEntityType, varCounter)
+
 		if expr != "" {
 			filterExpressions = append(filterExpressions, expr)
 			variables = append(variables, vars...)
@@ -112,7 +115,7 @@ func (c *Converter) processGroup(group models.Group, mainEntityType string, varC
 		return "", variables, varCounter
 	}
 
-	// Combine expressions based on group's combine_with
+	// Combine expressions based on group's operation
 	combiner := " AND "
 	if isOrGroup {
 		combiner = " OR "
@@ -151,6 +154,7 @@ func (c *Converter) processFilter(filter models.Filter, mainEntityType string, v
 	}
 
 	if mainEntityMapping != nil {
+
 		condition := c.buildDQLCondition(mainEntityMapping, filter)
 		if condition != "" {
 			return condition, variables, varCounter
@@ -158,7 +162,7 @@ func (c *Converter) processFilter(filter models.Filter, mainEntityType string, v
 	}
 
 	// Handle cross-entity filters
-	if crossEntityMapping != nil {
+	if c != nil {
 		varName := fmt.Sprintf("var%d", varCounter)
 		varCounter++
 
